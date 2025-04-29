@@ -9,24 +9,30 @@ export enum FileType {
 }
 
 @Injectable()
-export class FileService{
+export class FileService {
   createFile(type: FileType, file): string {
     try {
-      const fileExtension = file.originalname.split('.').pop()
-      const fileName = uuid.v4() + '.' + fileExtension
-      const filePath = path.resolve(__dirname, '..', 'static', type)
-      if(!fs.existsSync(filePath)) {
-        fs.mkdirSync(filePath, {recursive: true})
+      const fileExtension = file.originalname.split('.').pop();
+      const fileName = uuid.v4() + '.' + fileExtension;
+      const filePath = path.resolve(__dirname, '..', 'static', type);
+      if (!fs.existsSync(filePath)) {
+        fs.mkdirSync(filePath, { recursive: true });
       }
-      fs.writeFileSync(path.resolve(filePath, fileName), file.buffer)
-      return type + '/' + fileName
+      fs.writeFileSync(path.resolve(filePath, fileName), file.buffer);
+      return type + '/' + fileName;
     } catch (e) {
-      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  removeFile(fileName: string) {
-
+  removeFile(filePath: string) {
+    try {
+      const fullPath = path.resolve(__dirname, '..', 'static', filePath);
+      if (fs.existsSync(fullPath)) {
+        fs.unlinkSync(fullPath);
+      }
+    } catch (e) {
+      throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
-
 }

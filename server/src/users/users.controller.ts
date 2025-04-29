@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UploadedFile, UseInterceptors, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,9 +24,24 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  @Put(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(id, updateUserDto);
+  @Get('/name/:name')
+  findByName(@Param('name') name: string) {
+    return this.usersService.findByName(name);
+  }
+
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('picture'))
+  update(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() picture?
+  ) {
+    return this.usersService.update(id, updateUserDto, picture);
+  }
+
+  @Patch('/ban/:id')
+  banUser(@Param('id') id: string) {
+    return this.usersService.banUser(id);
   }
 
   @Delete(':id')

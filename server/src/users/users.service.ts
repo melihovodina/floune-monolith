@@ -48,23 +48,80 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto) {
-    const updatedUser = await this.userModel.findByIdAndUpdate(id, updateUserDto, {
-      new: true,
-    }).exec();
+  async findByName(name: string) {
+    const user = await this.userModel.findOne({ name }).exec();
+    if (!user) {
+      throw new BadRequestException(`User with name ${name} not found`);
+    }
+    return user;
+  }
 
-    if (!updatedUser) {
+  async update(id: string, updateUserDto: UpdateUserDto, picture?) {
+    const user = await this.userModel.findById(id).exec();
+    
+    if (!user) {
       throw new BadRequestException(`User with id ${id} not found`);
     }
+  
+    if (updateUserDto.email || updateUserDto.name) {
+      const existingUser = await this.userModel.findOne({
+        $or: [
+          { email: updateUserDto.email },
+          { name: updateUserDto.name },
+        ]
+      });
+  
+      if (existingUser) {
+        throw new BadRequestException('User with this email or name already exists');
+      }
+    }
+  
+    let picturePath: string | undefined;
+  
+    if (picture) {
+      if (user.picture) {
+        this.fileService.removeFile(user.picture);
+      }
 
+      picturePath = this.fileService.createFile(FileType.IMAGE, picture);
+    }
+  
+    const updatedData = {
+      ...updateUserDto,
+      ...(picturePath && { picture: picturePath }),
+    };
+  
+    const updatedUser = await this.userModel.findByIdAndUpdate(id, updatedData, {
+      new: true,
+    }).exec();
+  
     return updatedUser;
   }
 
-  async remove(id: string) {
-    const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
-    if (!deletedUser) {
+  async banUser(id: string) {
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
       throw new BadRequestException(`User with id ${id} not found`);
     }
+
+    user.banned = true;
+    await user.save();
+
+    return user;
+  }
+
+  async remove(id: string) {
+    const user = await this.userModel.findById(id).exec();
+    if (!user) {
+      throw new BadRequestException(`User with id ${id} not found`);
+    }
+  
+    if (user.picture) {
+      this.fileService.removeFile(user.picture);
+    }
+  
+    const deletedUser = await this.userModel.findByIdAndDelete(id).exec();
+  
     return deletedUser;
   }
 }
