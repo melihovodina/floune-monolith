@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, UploadedFile, UseInterceptors, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UploadedFile, UseInterceptors, Patch, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {FileInterceptor} from "@nestjs/platform-express";
+import { RoleGuard } from 'src/utils/guards/role.guard';
+import { Roles } from 'src/utils/decorators/role.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -10,6 +12,8 @@ export class UsersController {
 
   @Post()
   @UseInterceptors(FileInterceptor('picture'))
+  @UseGuards(RoleGuard)
+  @Roles('admin')
   create(@UploadedFile() picture, @Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto, picture);
   }
