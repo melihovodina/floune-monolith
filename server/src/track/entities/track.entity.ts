@@ -11,11 +11,17 @@ export class Track {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   artist: ObjectId;
 
-  @Prop()
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Album' })
+  album: ObjectId;
+
+  @Prop({ default: "We don't know the lyrics to this song" })
   text: string;
 
-  @Prop()
+  @Prop({ default: 0 })
   listens: number;
+  
+  @Prop({ default: 0 })
+  likes: number;
 
   @Prop()
   picture: string;

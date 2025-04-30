@@ -28,6 +28,12 @@ export class User {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Track' }] })
   uploadedTracks: ObjectId[];
 
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Album' }] })
+  likedAlbums: ObjectId[];
+
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Album' }] })
+  uploadedAlbums: ObjectId[];
+
   @Prop()
   picture: string;
 }

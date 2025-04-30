@@ -6,7 +6,7 @@ import { Reflector } from "@nestjs/core";
 export class RoleGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
-    private reflector: Reflector // Для получения метаданных ролей
+    private reflector: Reflector
   ) {}
 
   canActivate(context: ExecutionContext): boolean | Promise<boolean> {

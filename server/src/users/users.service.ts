@@ -4,7 +4,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { FileService, FileType } from "../file/file.service";
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './entities/user.entity';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class UsersService {
@@ -104,6 +104,40 @@ export class UsersService {
     }).exec();
   
     return updatedUser;
+  }
+
+  async addTrackToFavorites(userId: string, trackId: string) {
+    const user = await this.userModel.findById(userId).exec();
+    
+    if (!user) {
+      throw new BadRequestException(`User with id ${userId} not found`);
+    }
+    
+    const trackObjectId = new Types.ObjectId(trackId);
+    
+    if (user.likedTracks.some((id) => id.toString() === trackObjectId.toString())) {
+      throw new BadRequestException(`Track is already in favorites`);
+    }
+    
+    user.likedTracks.push(trackObjectId as any);
+    await user.save();
+    
+    return user.likedTracks;
+  }
+
+  async addTrackToUploads(userId: string, trackId: string) {
+    const user = await this.userModel.findById(userId).exec();
+    
+    if (!user) {
+      throw new BadRequestException(`User with id ${userId} not found`);
+    }
+    
+    const trackObjectId = new Types.ObjectId(trackId);
+    
+    user.uploadedTracks.push(trackObjectId as any);
+    await user.save();
+    
+    return user.uploadedTracks;
   }
 
   async banUser(id: string) {
