@@ -5,6 +5,8 @@ export type UserDocument = User & Document;
 
 @Schema({ timestamps: true })
 export class User {
+  _id: ObjectId;
+
   @Prop()
   name: string;
 
@@ -17,7 +19,7 @@ export class User {
   @Prop({ default: false })
   banned: boolean;
 
-  @Prop({ enum: ['user', 'artist'], default: 'user' })
+  @Prop({ enum: ['user', 'artist', 'admin'], default: 'user' })
   role: string;
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Track' }] })

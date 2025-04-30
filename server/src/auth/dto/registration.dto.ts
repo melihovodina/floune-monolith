@@ -1,7 +1,7 @@
-import { IsString, IsEmail, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsEmail } from 'class-validator';
 import { IsSanitized } from '../../utils/decorators/isSanitized.decorator';
 
-export class CreateUserDto {
+export class registrationDto {
   @IsString()
   @IsSanitized({ message: 'Name contains unsafe content' })
   name: string;
@@ -13,8 +13,4 @@ export class CreateUserDto {
   @IsString()
   @IsSanitized({ message: 'Password contains unsafe content' })
   password: string;
-
-  @IsEnum(['user', 'artist'])
-  @IsOptional()
-  role?: string;
 }
