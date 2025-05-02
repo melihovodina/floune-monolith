@@ -7,7 +7,7 @@ export type UserDocument = User & Document;
 export class User {
   _id: ObjectId;
 
-  @Prop()
+  @Prop({ unique: true })
   name: string;
 
   @Prop({ unique: true })
@@ -28,11 +28,17 @@ export class User {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Track' }] })
   uploadedTracks: ObjectId[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Album' }] })
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' }] })
   likedAlbums: ObjectId[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Album' }] })
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' }] })
   uploadedAlbums: ObjectId[];
+
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }] })
+  following: ObjectId[];
+
+  @Prop({ default: 0 })
+  followers: number;  
 
   @Prop()
   picture: string;

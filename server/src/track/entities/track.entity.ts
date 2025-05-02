@@ -14,9 +14,6 @@ export class Track {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' })
   playlist: ObjectId;
 
-  @Prop({ default: "We don't know the lyrics to this song" })
-  text: string;
-
   @Prop({ default: 0 })
   listens: number;
   
