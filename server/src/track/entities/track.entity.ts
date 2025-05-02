@@ -11,8 +11,8 @@ export class Track {
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
   artist: ObjectId;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Album' })
-  album: ObjectId;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' })
+  playlist: ObjectId;
 
   @Prop({ default: "We don't know the lyrics to this song" })
   text: string;

@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Param, Post, Query, UploadedFiles, UseGuards, UseInterceptors} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, Post, Query, Req, UploadedFiles, UseGuards, UseInterceptors} from "@nestjs/common";
 import {TrackService} from "./track.service";
 import {CreateTrackDto} from "./dto/create-track.dto";
 import {ObjectId} from "mongoose";
@@ -15,9 +15,10 @@ export class TrackController {
     { name: 'audio', maxCount: 1 },
   ]))
   @UseGuards(AuthGuard)
-  create(@UploadedFiles() files, @Body() dto: CreateTrackDto) {
+  create(@Req() req, @UploadedFiles() files, @Body() dto: CreateTrackDto) {
+    const userId = req.user.id;
     const {picture, audio} = files
-    return this.trackService.create(dto, picture[0], audio[0]);
+    return this.trackService.create(dto, userId, picture[0], audio[0]);
   }
 
   @Get()

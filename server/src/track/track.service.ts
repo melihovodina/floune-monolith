@@ -12,15 +12,17 @@ export class TrackService {
     private fileService: FileService
   ) {}
 
-  async create(dto: CreateTrackDto, picture, audio): Promise<Track> {
+  async create(dto: CreateTrackDto, userId: string, audio, picture): Promise<Track> {
     const audioPath = this.fileService.createFile(FileType.AUDIO, audio);
     const picturePath = this.fileService.createFile(FileType.IMAGE, picture);
+    
     const track = await this.trackModel.create({
-      ...dto, 
-      listens: 0, 
-      audio: audioPath, 
-      picture: picturePath
-    })
+      ...dto,
+      artist: userId,
+      audio: audioPath,
+      picture: picturePath,
+    });
+  
     return track;
   }
 

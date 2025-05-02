@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, ObjectId, Schema as MongooseSchema } from 'mongoose';
 
-export type AlbumDocument = Album & Document;
+export type PlaylistDocument = Playlist & Document;
 
 @Schema({ timestamps: true })
-export class Album {
+export class Playlist {
   _id: ObjectId;
 
   @Prop({ required: true })
@@ -23,4 +23,4 @@ export class Album {
   picture: string;
 }
 
-export const AlbumSchema = SchemaFactory.createForClass(Album);
+export const PlaylistSchema = SchemaFactory.createForClass(Playlist);
