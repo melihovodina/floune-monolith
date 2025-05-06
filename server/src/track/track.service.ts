@@ -1,4 +1,4 @@
-import {Injectable} from "@nestjs/common";
+import {BadRequestException, Injectable, UnauthorizedException} from "@nestjs/common";
 import {InjectModel} from "@nestjs/mongoose";
 import {Track, TrackDocument} from "./entities/track.entity";
 import {Model, ObjectId} from "mongoose";
@@ -33,25 +33,34 @@ export class TrackService {
   }
 
   async getOne(id: ObjectId): Promise<Track> {
-    const track = await this.trackModel.findById(id).populate('comments');
+    const track = await this.trackModel.findById(id)
     if (!track) {
-      throw new Error(`Track with id ${id} not found`);
+      throw new BadRequestException(`Track with id ${id} not found`);
     }
     return track;
   }
 
-  async delete(id: ObjectId): Promise<ObjectId> {
-    const track = await this.trackModel.findByIdAndDelete(id);
+  async delete(id: ObjectId, userId: string, userRole: string): Promise<ObjectId> {
+    const track = await this.trackModel.findById(id)
+
     if (!track) {
-      throw new Error(`Track with id ${id} not found`);
+      throw new BadRequestException(`Track with id ${id} not found`);
     }
+
+    if (track.artistId.toString() !== userId && userRole !== 'admin') {
+      console.log(track.artistId.toString(), userId, userRole)
+      throw new UnauthorizedException(`You are not authorized to delete this track`);
+    }
+
+    await this.trackModel.findByIdAndDelete(id);
+
     return track._id as ObjectId;
   }
 
   async listen(id: ObjectId): Promise<void> {
     const track = await this.trackModel.findById(id);
     if (!track) {
-      throw new Error(`Track with id ${id} not found`);
+      throw new BadRequestException(`Track with id ${id} not found`);
     }
     track.listens += 1;
     await track.save();
@@ -67,7 +76,7 @@ export class TrackService {
   async like(id: string): Promise<void> {
     const track = await this.trackModel.findById(id);
     if (!track) {
-      throw new Error(`Track with id ${id} not found`);
+      throw new BadRequestException(`Track with id ${id} not found`);
     }
     track.likes += 1;
     await track.save();

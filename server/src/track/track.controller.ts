@@ -18,8 +18,8 @@ export class TrackController {
   create(@Req() req, @UploadedFiles() files, @Body() dto: CreateTrackDto) {
     const userId = req.user.id;
     const userName = req.user.name;
-    const {picture, audio} = files
-    return this.trackService.create(dto, userId, userName, picture[0], audio[0]);
+    const {audio, picture} = files
+    return this.trackService.create(dto, userId, userName, audio[0], picture[0],);
   }
 
   @Get()
@@ -40,8 +40,10 @@ export class TrackController {
 
   @Delete(':id')
   @UseGuards(AuthGuard)
-  delete(@Param('id') id: ObjectId) {
-    return this.trackService.delete(id);
+  delete(@Req() req, @Param('id') id: ObjectId) {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    return this.trackService.delete(id, userId, userRole);
   }
 
   @Post('/listen/:id')
