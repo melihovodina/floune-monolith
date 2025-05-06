@@ -12,13 +12,14 @@ export class TrackService {
     private fileService: FileService
   ) {}
 
-  async create(dto: CreateTrackDto, userId: string, audio, picture): Promise<Track> {
+  async create(dto: CreateTrackDto, userId: string, userName: string, audio, picture): Promise<Track> {
     const audioPath = this.fileService.createFile(FileType.AUDIO, audio);
     const picturePath = this.fileService.createFile(FileType.IMAGE, picture);
     
     const track = await this.trackModel.create({
       ...dto,
-      artist: userId,
+      artistId: userId,
+      artistName: userName,
       audio: audioPath,
       picture: picturePath,
     });
@@ -61,5 +62,14 @@ export class TrackService {
       name: {$regex: new RegExp(query, 'i')}
     })
     return tracks;
+  }
+
+  async like(id: string): Promise<void> {
+    const track = await this.trackModel.findById(id);
+    if (!track) {
+      throw new Error(`Track with id ${id} not found`);
+    }
+    track.likes += 1;
+    await track.save();
   }
 }

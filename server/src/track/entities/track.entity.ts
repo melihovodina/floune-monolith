@@ -8,11 +8,14 @@ export class Track {
   @Prop()
   name: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
-  artist: ObjectId;
+  @Prop()
+  artistName: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' })
-  playlist: ObjectId;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'User' })
+  artistId: ObjectId;
+  
+  @Prop({ default: "No description" })
+  text: string;
 
   @Prop({ default: 0 })
   listens: number;

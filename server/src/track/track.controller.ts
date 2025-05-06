@@ -17,8 +17,9 @@ export class TrackController {
   @UseGuards(AuthGuard)
   create(@Req() req, @UploadedFiles() files, @Body() dto: CreateTrackDto) {
     const userId = req.user.id;
+    const userName = req.user.name;
     const {picture, audio} = files
-    return this.trackService.create(dto, userId, picture[0], audio[0]);
+    return this.trackService.create(dto, userId, userName, picture[0], audio[0]);
   }
 
   @Get()
@@ -38,6 +39,7 @@ export class TrackController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard)
   delete(@Param('id') id: ObjectId) {
     return this.trackService.delete(id);
   }

@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Param, Delete, UploadedFile, UseInterceptors, Patch, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UploadedFile, UseInterceptors, Patch, UseGuards, Req, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import {FileInterceptor} from "@nestjs/platform-express";
+import { FileInterceptor } from "@nestjs/platform-express";
 import { RoleGuard } from 'src/utils/guards/role.guard';
 import { Roles } from 'src/utils/decorators/role.decorator';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -12,10 +12,10 @@ import { AuthGuard } from 'src/utils/guards/auth.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-//users requests
+// users requests
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query('count') count: number, @Query('offset') offset: number) {
+    return this.usersService.findAll(count, offset);
   }
 
   @Get('/name/:name')
@@ -48,8 +48,8 @@ export class UsersController {
     const userId = req.user.id;
     return this.usersService.addTrackToFavorites(userId, trackId);
   }
-  
-//admin requests
+
+// admin requests
   @Post()
   @UseInterceptors(FileInterceptor('picture'))
   @UseGuards(RoleGuard)
@@ -57,7 +57,7 @@ export class UsersController {
   create(@UploadedFile() picture, @Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto, picture);
   }
-  
+
   @Get(':id')
   @UseGuards(RoleGuard)
   @Roles('admin')

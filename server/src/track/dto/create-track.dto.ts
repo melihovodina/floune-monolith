@@ -6,11 +6,6 @@ export class CreateTrackDto {
   @IsSanitized({ message: 'Name contains unsafe content' })
   @Length(2, 100, { message: 'Name must be between 2 and 100 characters' })
   name: string;
-  
-  @IsString()
-  @IsSanitized({ message: 'Playlist contains unsafe content' })
-  @IsOptional()
-  playlist?: string;
 
   @IsString()
   @IsSanitized({ message: 'Text contains unsafe content' })

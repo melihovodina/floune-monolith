@@ -5,12 +5,14 @@ import { FileService, FileType } from "../file/file.service";
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './entities/user.entity';
 import { Model, Types } from 'mongoose';
+import { TrackService } from 'src/track/track.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private fileService: FileService
+    private fileService: FileService,
+    private trackService: TrackService
   ) {}
 
   async create(createUserDto: CreateUserDto, picture?) {
@@ -36,15 +38,24 @@ export class UsersService {
     return user;
   }
 
-  async findAll() {
-    return this.userModel.find().exec();
+  async findAll(count: number, offset: number) {
+    return this.userModel
+      .find()
+      .skip(offset)
+      .limit(count)
+      .exec();
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, count?: number, offset?: number) {
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new BadRequestException(`User with id ${id} not found`);
     }
+
+    if (count && offset) {
+      user.likedTracks = user.likedTracks.slice(offset, offset + count);
+    }
+
     return user;
   }
 
@@ -57,7 +68,7 @@ export class UsersService {
   }
 
   async findByEmail(email: string) {
-    const user = await this.userModel.findOne({ email }).exec()
+    const user = await this.userModel.findOne({ email }).exec();
     if (!user) {
       throw new BadRequestException(`User with email ${email} not found`);
     }
@@ -121,6 +132,8 @@ export class UsersService {
     
     user.likedTracks.push(trackObjectId as any);
     await user.save();
+
+    await this.trackService.like(trackId);
     
     return user.likedTracks;
   }
