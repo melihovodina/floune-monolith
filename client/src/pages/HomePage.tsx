@@ -1,47 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import TrackCard from '../components/tracks/TrackCard';
 import { Track } from '../types';
+import { getAllTracks } from '../api/api';
 
 const HomePage: React.FC = () => {
   const [trendingTracks, setTrendingTracks] = useState<Track[]>([]);
   const [newTracks, setNewTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
-  // Mock data loading
+
   useEffect(() => {
-    // Simulating API call
-    setTimeout(() => {
-      const mockUser = {
-        id: '1',
-        username: 'Artist Name',
-        email: 'artist@example.com',
-        isArtist: true,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      
-      const mockTracks: Track[] = Array.from({ length: 8 }, (_, i) => ({
-        id: `track-${i}`,
-        title: `Track Title ${i + 1}`,
-        description: `Description for track ${i + 1}`,
-        coverArt: `https://picsum.photos/seed/${i + 1}/300/300`,
-        audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-        duration: 180 + i * 30,
-        userId: mockUser.id,
-        user: mockUser,
-        plays: 1000 + i * 100,
-        likes: 120 + i * 15,
-        commentsCount: 10 + i * 2,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }));
-      
-      setTrendingTracks(mockTracks.slice(0, 4));
-      setNewTracks(mockTracks.slice(4));
-      setIsLoading(false);
-    }, 1000);
+    const fetchTracks = async () => {
+      try {
+        setIsLoading(true);
+
+        // Загрузка треков с сервера
+        const response = await getAllTracks(8, 0); // Получаем первые 8 треков
+        const tracks: Track[] = response.data;
+
+        // Разделяем треки на "Trending" и "New Releases"
+        setTrendingTracks(tracks.slice(0, 4)); // Первые 4 трека
+        setNewTracks(tracks.slice(4)); // Следующие 4 трека
+      } catch (error) {
+        console.error('Ошибка при загрузке треков:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTracks();
   }, []);
-  
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -49,7 +37,7 @@ const HomePage: React.FC = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="max-w-6xl mx-auto">
       <section className="mb-10">
@@ -58,20 +46,20 @@ const HomePage: React.FC = () => {
           <a href="/trending" className="text-orange-500 hover:text-orange-400 text-sm font-medium">See All</a>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {trendingTracks.map((track) => (
-            <TrackCard key={track.id} track={track} />
+          {trendingTracks.map((track, index) => (
+            <TrackCard key={track.id || index} track={track} />
           ))}
         </div>
       </section>
-      
+
       <section className="mb-10">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-white">New Releases</h2>
           <a href="/new" className="text-orange-500 hover:text-orange-400 text-sm font-medium">See All</a>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {newTracks.map((track) => (
-            <TrackCard key={track.id} track={track} />
+          {newTracks.map((track, index) => (
+            <TrackCard key={track.id || index} track={track} />
           ))}
         </div>
       </section>
