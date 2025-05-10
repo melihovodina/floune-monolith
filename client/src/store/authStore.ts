@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { User } from '../types';
+import * as api from '../api/api';
 
 interface AuthState {
   user: User | null;
@@ -13,25 +14,6 @@ interface AuthState {
   clearError: () => void;
 }
 
-// This would be replaced with actual API calls
-const mockAuth = async (email: string, password: string): Promise<{ user: User; token: string }> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        user: {
-          id: '1',
-          username: 'user1',
-          email,
-          isArtist: false,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        },
-        token: 'mock-token'
-      });
-    }, 1000);
-  });
-};
-
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: localStorage.getItem('token'),
@@ -42,9 +24,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   login: async (email, password) => {
     set({ isLoading: true, error: null });
     try {
-      const { user, token } = await mockAuth(email, password);
-      localStorage.setItem('token', token);
-      set({ user, token, isAuthenticated: true, isLoading: false });
+      const { data } = await api.login({ email, password });
+      localStorage.setItem('token', data.token);
+      
+      const { data: profile } = await api.getProfile();
+      set({ 
+        user: profile, 
+        token: data.token, 
+        isAuthenticated: true, 
+        isLoading: false 
+      });
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : 'Failed to login', 
@@ -53,13 +42,19 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
   },
   
-  register: async (username, email, password) => {
+  register: async (name, email, password) => {
     set({ isLoading: true, error: null });
     try {
-      // This would be replaced with an actual API call
-      const { user, token } = await mockAuth(email, password);
-      localStorage.setItem('token', token);
-      set({ user, token, isAuthenticated: true, isLoading: false });
+      const { data } = await api.register({ name, email, password });
+      localStorage.setItem('token', data.token);
+      
+      const { data: profile } = await api.getProfile();
+      set({ 
+        user: profile, 
+        token: data.token, 
+        isAuthenticated: true, 
+        isLoading: false 
+      });
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : 'Failed to register', 

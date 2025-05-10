@@ -10,6 +10,7 @@ interface TrackCardProps {
 
 const TrackCard: React.FC<TrackCardProps> = ({ track, compact = false }) => {
   const { playTrack, currentTrack, isPlaying, togglePlay } = usePlayerStore();
+  console.log('usePlayerStore:', { playTrack });
   
   const isCurrentTrack = currentTrack?.id === track.id;
   
@@ -17,7 +18,7 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, compact = false }) => {
     if (isCurrentTrack) {
       togglePlay();
     } else {
-      playTrack(track);
+     playTrack(track);
     }
   };
   
@@ -36,7 +37,7 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, compact = false }) => {
           )}
           <button 
             className={`absolute inset-0 flex items-center justify-center ${isCurrentTrack && isPlaying ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition bg-black/30 rounded`}
-            onClick={handlePlayClick}
+            onClick={() => handlePlayClick()}
           >
             <Play size={16} fill="white" className={isCurrentTrack && isPlaying ? "hidden" : ""} />
             {isCurrentTrack && isPlaying && <span className="w-2 h-4 bg-white rounded-sm"></span>}

@@ -1,13 +1,14 @@
 import { create } from 'zustand';
 import { Track } from '../types';
+import * as api from '../api/api';
 
 interface PlayerState {
   currentTrack: Track | null;
   queue: Track[];
   isPlaying: boolean;
   volume: number;
-  progress: number; // 0 to 1
-  duration: number; // in seconds
+  progress: number;
+  duration: number;
   playTrack: (track: Track) => void;
   addToQueue: (track: Track) => void;
   removeFromQueue: (trackId: string) => void;
@@ -28,8 +29,14 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
   progress: 0,
   duration: 0,
   
-  playTrack: (track) => {
-    set({ currentTrack: track, isPlaying: true, progress: 0 });
+  playTrack: async (track) => {
+    try {
+      await api.listenTrack(track.id);
+      set({ currentTrack: track, isPlaying: true, progress: 0 });
+    } catch (error) {
+      console.error('Failed to record track listen:', error);
+      set({ currentTrack: track, isPlaying: true, progress: 0 });
+    }
   },
   
   addToQueue: (track) => {

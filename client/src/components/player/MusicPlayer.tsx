@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Heart, Disc } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Shuffle, Heart, Music } from 'lucide-react';
 import { usePlayerStore } from '../../store/playerStore';
 
 const MusicPlayer: React.FC = () => {
@@ -7,11 +7,11 @@ const MusicPlayer: React.FC = () => {
     currentTrack, 
     isPlaying, 
     volume, 
-    progress, 
+    progress,
     duration,
     togglePlay, 
     setVolume, 
-    setProgress, 
+    setProgress,
     setDuration,
     playNext,
     playPrevious
@@ -20,16 +20,15 @@ const MusicPlayer: React.FC = () => {
   const [liked, setLiked] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [prevVolume, setPrevVolume] = useState(volume);
+  const [currentTime, setCurrentTime] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
   
-  // Format time in mm:ss
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
   
-  // Handle play/pause
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -43,50 +42,52 @@ const MusicPlayer: React.FC = () => {
     }
   }, [isPlaying, currentTrack, togglePlay]);
   
-  // Update progress as track plays
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-  
-    let animationFrameId: number;
-  
+    
     const updateProgress = () => {
-      if (audio && !audio.paused) {
-        const currentProgress = audio.currentTime / (audio.duration || 1);
-        setProgress(currentProgress);
-        animationFrameId = requestAnimationFrame(updateProgress);
-      }
+      setCurrentTime(audio.currentTime);
+      setProgress(audio.currentTime / (audio.duration || 1));
     };
-  
-    // Запускаем обновление прогресса
-    if (isPlaying) {
-      animationFrameId = requestAnimationFrame(updateProgress);
-    }
-  
-    // Очищаем `requestAnimationFrame` при остановке
+    
+    const updateDuration = () => {
+      setDuration(audio.duration || 0);
+    };
+    
+    const handleEnded = () => {
+      playNext();
+    };
+    
+    audio.addEventListener('timeupdate', updateProgress);
+    audio.addEventListener('durationchange', updateDuration);
+    audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('ended', handleEnded);
+    
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      audio.removeEventListener('timeupdate', updateProgress);
+      audio.removeEventListener('durationchange', updateDuration);
+      audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('ended', handleEnded);
     };
-  }, [isPlaying, setProgress]);
+  }, [setProgress, setDuration, playNext]);
   
-  // Update volume
   useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
   }, [volume]);
   
-  // Handle seeking
   const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newProgress = parseFloat(e.target.value);
-    setProgress(newProgress);
-    
     if (audioRef.current) {
-      audioRef.current.currentTime = newProgress * (audioRef.current.duration || 0);
+      const newTime = newProgress * (audioRef.current.duration || 0);
+      audioRef.current.currentTime = newTime;
+      setCurrentTime(newTime);
+      setProgress(newProgress);
     }
   };
   
-  // Handle volume change
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
@@ -98,7 +99,6 @@ const MusicPlayer: React.FC = () => {
     }
   };
   
-  // Toggle mute
   const toggleMute = () => {
     if (isMuted) {
       setVolume(prevVolume || 0.5);
@@ -119,32 +119,26 @@ const MusicPlayer: React.FC = () => {
       <div className="flex items-center">
         <audio 
           ref={audioRef} 
-          src={currentTrack.audioUrl} 
+          src={`http://localhost:5000/${currentTrack.audio}`}
           preload="metadata"
-          onLoadedMetadata={() => {
-            if (audioRef.current) {
-              setDuration(audioRef.current.duration);
-            }
-          }}
         />
         
-        {/* Track Info */}
         <div className="w-1/4">
           <div className="flex items-center">
-            {currentTrack.coverArt ? (
+            {currentTrack.picture ? (
               <img 
-                src={currentTrack.coverArt} 
-                alt={currentTrack.title} 
+                src={`http://localhost:5000/${currentTrack.picture}`}
+                alt={currentTrack.name}
                 className="w-12 h-12 object-cover rounded"
               />
             ) : (
               <div className="w-12 h-12 bg-gray-700 rounded flex items-center justify-center text-gray-500">
-                <Disc size={24} />
+                <Music size={24} />
               </div>
             )}
             <div className="ml-3 truncate">
-              <p className="text-sm font-medium text-white truncate">{currentTrack.title}</p>
-              <p className="text-xs text-gray-400 truncate">{currentTrack.user.username}</p>
+              <p className="text-sm font-medium text-white truncate">{currentTrack.name}</p>
+              <p className="text-xs text-gray-400 truncate">{currentTrack.artistName}</p>
             </div>
             <button 
               className={`ml-4 text-gray-400 hover:text-pink-500 transition ${liked ? 'text-pink-500' : ''}`}
@@ -155,9 +149,11 @@ const MusicPlayer: React.FC = () => {
           </div>
         </div>
         
-        {/* Controls */}
         <div className="flex-1 flex flex-col items-center">
           <div className="flex items-center space-x-4">
+            <button className="text-gray-400 hover:text-white transition">
+              <Shuffle size={18} />
+            </button>
             <button 
               className="text-gray-400 hover:text-white transition"
               onClick={playPrevious}
@@ -176,11 +172,14 @@ const MusicPlayer: React.FC = () => {
             >
               <SkipForward size={22} />
             </button>
+            <button className="text-gray-400 hover:text-white transition">
+              <Repeat size={18} />
+            </button>
           </div>
           
           <div className="flex items-center w-full mt-2">
             <span className="text-xs text-gray-400 w-10">
-              {formatTime(progress * duration)}
+              {formatTime(currentTime)}
             </span>
             <div className="flex-1 mx-2">
               <input
@@ -199,7 +198,6 @@ const MusicPlayer: React.FC = () => {
           </div>
         </div>
         
-        {/* Volume */}
         <div className="w-1/4 flex justify-end items-center">
           <button 
             className="text-gray-400 hover:text-white mr-2"
