@@ -7,7 +7,7 @@ const Header = () => {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <header className="bg-zinc-900 px-6 py-4">
+    <header className="bg-[#1a1f25] px-6 py-4">
       <div className="flex items-center justify-end">
         {isAuthenticated ? (
           <button
@@ -24,7 +24,7 @@ const Header = () => {
         ) : (
           <button
             onClick={() => navigate('/auth')}
-            className="text-white bg-green-500 hover:bg-green-600 px-6 py-2 rounded-full"
+            className="text-white bg-[#ff5500] hover:bg-orange-700 px-6 py-2 rounded-full"
           >
             Log in
           </button>

@@ -13,7 +13,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <div className="w-64 bg-zinc-900 p-4">
+    <div className="w-64 bg-[#1a1f25] p-4">
       <div className="mb-8 flex flex-row">
         <div className="text-orange-500 mt-0.5 mr-1">
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,8 +30,8 @@ const Sidebar = () => {
             to={item.path}
             className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
               location.pathname === item.path
-                ? 'bg-zinc-800 text-white'
-                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                ? 'bg-[#1a1f25] text-white'
+                : 'text-zinc-400 hover:text-white hover:bg-[#1a1f25]'
             }`}
           >
             <item.icon size={20} />
