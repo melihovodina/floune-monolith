@@ -18,6 +18,12 @@ const Player = () => {
     }
   }, [isPlaying, currentTrack]);
 
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume; // Применяем громкость
+    }
+  }, [volume]);
+
   const handleTimeUpdate = () => {
     if (audioRef.current) {
       const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
@@ -25,24 +31,34 @@ const Player = () => {
     }
   };
 
+  const handleSeek = (value: number[]) => {
+    if (audioRef.current) {
+      const newTime = (value[0] / 100) * audioRef.current.duration;
+      audioRef.current.currentTime = newTime;
+      setProgress(value[0]);
+    }
+  };
+
   if (!currentTrack) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[#1a1f25] border-t border-zinc-800 px-4 py-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
+        {/* Фото и название трека */}
+        <div className="flex items-center gap-4 w-full sm:w-auto">
           <img
             src={`http://localhost:5000/${currentTrack.picture}`}
             alt={currentTrack.name}
             className="w-12 h-12 rounded"
           />
-          <div>
-            <p className="text-white font-medium">{currentTrack.name}</p>
-            <p className="text-sm text-zinc-400">{currentTrack.artistName}</p>
+          <div className="min-w-0">
+            <p className="text-white font-medium truncate">{currentTrack.name}</p>
+            <p className="text-sm text-zinc-400 truncate">{currentTrack.artistName}</p>
           </div>
         </div>
         
-        <div className="flex flex-col items-center gap-2 flex-1 max-w-[600px]">
+        {/* Центральные элементы управления */}
+        <div className="flex flex-col items-center gap-2 flex-1 w-full sm:max-w-[600px]">
           <div className="flex items-center gap-6">
             <button className="text-zinc-400 hover:text-white">
               <SkipBack size={24} />
@@ -59,23 +75,29 @@ const Player = () => {
           </div>
           
           <div className="w-full flex items-center gap-2">
-            <span className="text-xs text-zinc-400">0:00</span>
+            <span className="text-xs text-zinc-400">
+              {audioRef.current ? formatTime(audioRef.current.currentTime) : '0:00'}
+            </span>
             <Slider.Root
               className="relative flex-1 h-1 bg-zinc-600 rounded-full"
               value={[progress]}
               max={100}
               step={1}
+              onValueChange={handleSeek}
             >
               <Slider.Track className="relative h-full rounded-full">
                 <Slider.Range className="absolute h-full bg-white rounded-full" />
               </Slider.Track>
-              <Slider.Thumb className="block w-3 h-3 bg-white rounded-full hover:scale-110" />
+              <Slider.Thumb className="block w-3 h-3 bg-white rounded-full hover:scale-110 transform -translate-y-1/4" />
             </Slider.Root>
-            <span className="text-xs text-zinc-400">3:45</span>
+            <span className="text-xs text-zinc-400">
+              {audioRef.current ? formatTime(audioRef.current.duration) : '0:00'}
+            </span>
           </div>
         </div>
         
-        <div className="flex items-center gap-2 min-w-[150px]">
+        {/* Регулировка громкости */}
+        <div className="hidden sm:flex items-center gap-2 min-w-[150px]">
           <Volume2 size={20} className="text-zinc-400" />
           <Slider.Root
             className="relative flex-1 h-1 bg-zinc-600 rounded-full"
@@ -87,7 +109,7 @@ const Player = () => {
             <Slider.Track className="relative h-full rounded-full">
               <Slider.Range className="absolute h-full bg-white rounded-full" />
             </Slider.Track>
-            <Slider.Thumb className="block w-3 h-3 bg-white rounded-full hover:scale-110" />
+            <Slider.Thumb className="block w-3 h-3 bg-white rounded-full hover:scale-110 transform -translate-y-1/4" />
           </Slider.Root>
         </div>
       </div>
@@ -100,6 +122,12 @@ const Player = () => {
       />
     </div>
   );
+};
+
+const formatTime = (time: number) => {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60);
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
 export default Player;
