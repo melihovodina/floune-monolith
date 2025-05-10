@@ -10,7 +10,7 @@ import { PlaylistModule } from './playlist/playlist.module';
 
 @Module({
   imports: [
-    ServeStaticModule.forRoot({rootPath: path.resolve(__dirname, 'static')}),
+    ServeStaticModule.forRoot({rootPath: path.resolve(process.cwd(), 'static')}),
     MongooseModule.forRoot('mongodb://localhost:27017/floune'),
     TrackModule,
     FileModule,
