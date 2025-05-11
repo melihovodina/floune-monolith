@@ -23,9 +23,12 @@ export class TrackController {
   }
 
   @Get()
-  getAll(@Query('count') count: number,
-  @Query('offset') offset: number) {
-    return this.trackService.getAll(count, offset)
+  getAll(
+    @Query('count') count: number,
+    @Query('offset') offset: number,
+    @Query('sortBy') sortBy: 'createdAt' | 'likes' | 'listens' = 'createdAt'
+  ) {
+    return this.trackService.getAll(count, offset, sortBy);
   }
 
   @Get('/search')

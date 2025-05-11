@@ -44,12 +44,11 @@ const Player = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[#1a1f25] border-t border-zinc-800 px-4 py-3">
       <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
-        {/* Фото и название трека */}
         <div className="flex items-center gap-4 w-full sm:w-auto">
           <img
             src={`http://localhost:5000/${currentTrack.picture}`}
             alt={currentTrack.name}
-            className="w-12 h-12 rounded"
+            className="w-12 h-12 rounded object-cover"
           />
           <div className="min-w-0">
             <p className="text-white font-medium truncate">{currentTrack.name}</p>
@@ -57,7 +56,6 @@ const Player = () => {
           </div>
         </div>
         
-        {/* Центральные элементы управления */}
         <div className="flex flex-col items-center gap-2 flex-1 w-full sm:max-w-[600px]">
           <div className="flex items-center gap-6">
             <button className="text-zinc-400 hover:text-white">
@@ -96,7 +94,6 @@ const Player = () => {
           </div>
         </div>
         
-        {/* Регулировка громкости */}
         <div className="hidden sm:flex items-center gap-2 min-w-[150px]">
           <Volume2 size={20} className="text-zinc-400" />
           <Slider.Root

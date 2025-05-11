@@ -52,9 +52,9 @@ export const createTrack = async (data: FormData) => {
   });
 };
 
-export const getAllTracks = async (count: number, offset: number) => {
+export const getAllTracks = async (count: number, offset: number, sortBy: 'createdAt' | 'likes' | 'listens' = 'createdAt') => {
   return axiosInstance.get('/tracks', {
-    params: { count, offset },
+    params: { count, offset, sortBy },
   });
 };
 
