@@ -27,7 +27,7 @@ export class UsersService {
     let picturePath: string | undefined;
 
     if (picture) {
-      picturePath = this.fileService.createFile(FileType.IMAGE, picture);
+      picturePath = await this.fileService.createFile(FileType.IMAGE, picture);
     }
 
     const user = await this.userModel.create({ 
@@ -102,7 +102,7 @@ export class UsersService {
         this.fileService.removeFile(user.picture);
       }
 
-      picturePath = this.fileService.createFile(FileType.IMAGE, picture);
+      picturePath = await this.fileService.createFile(FileType.IMAGE, picture);
     }
   
     const updatedData = {
