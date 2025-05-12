@@ -25,7 +25,6 @@ export class UsersService {
     }
 
     let picturePath: string | undefined;
-
     if (picture) {
       picturePath = await this.fileService.createFile(FileType.IMAGE, picture);
     }
@@ -64,6 +63,7 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException(`User with name ${name} not found`);
     }
+
     return user;
   }
 
@@ -72,12 +72,12 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException(`User with email ${email} not found`);
     }
+
     return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto, picture?) {
     const user = await this.userModel.findById(id).exec();
-    
     if (!user) {
       throw new BadRequestException(`User with id ${id} not found`);
     }
@@ -96,12 +96,10 @@ export class UsersService {
     }
   
     let picturePath: string | undefined;
-  
     if (picture) {
       if (user.picture) {
         this.fileService.removeFile(user.picture);
       }
-
       picturePath = await this.fileService.createFile(FileType.IMAGE, picture);
     }
   
@@ -119,28 +117,44 @@ export class UsersService {
 
   async addTrackToFavorites(userId: string, trackId: string) {
     const user = await this.userModel.findById(userId).exec();
-    
     if (!user) {
       throw new BadRequestException(`User with id ${userId} not found`);
     }
     
-    const trackObjectId = new Types.ObjectId(trackId);
-    
-    if (user.likedTracks.some((id) => id.toString() === trackObjectId.toString())) {
+    if (user.likedTracks.some((id) => id.toString() === trackId)) {
       throw new BadRequestException(`Track is already in favorites`);
     }
     
-    user.likedTracks.push(trackObjectId as any);
+    user.likedTracks.push(trackId as any);
     await user.save();
 
-    await this.trackService.like(trackId);
+    await this.trackService.like(trackId, 1);
     
+    return user.likedTracks;
+  }
+
+  async removeTrackFromFavorites(userId: string, trackId: string) {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new BadRequestException(`User with id ${userId} not found`);
+    }
+
+    if (!user.likedTracks.some((id) => id.toString() === trackId)) {
+      throw new BadRequestException(`Track is not in favorites`);
+    }
+
+    user.likedTracks = user.likedTracks.filter(
+      (likedTrackId) => likedTrackId.toString() !== trackId
+    );
+    await user.save();
+
+    await this.trackService.like(trackId, -1);
+
     return user.likedTracks;
   }
 
   async addTrackToUploads(userId: string, trackId: ObjectId) {
     const user = await this.userModel.findById(userId).exec();
-    
     if (!user) {
       throw new BadRequestException(`User with id ${userId} not found`);
     }
@@ -148,6 +162,20 @@ export class UsersService {
     user.uploadedTracks.push(trackId);
     await user.save();
     
+    return user.uploadedTracks;
+  }
+
+  async removeTrackFromUploads(userId: ObjectId, trackId: ObjectId) {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new BadRequestException(`User with id ${userId} not found`);
+    }
+
+    user.uploadedTracks = user.uploadedTracks.filter(
+      (uploadedTrackId) => uploadedTrackId.toString() !== trackId.toString()
+    );
+    await user.save();
+
     return user.uploadedTracks;
   }
 

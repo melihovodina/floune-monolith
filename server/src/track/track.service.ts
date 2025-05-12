@@ -66,6 +66,8 @@ export class TrackService {
     this.fileService.removeFile(track.audio);
     this.fileService.removeFile(track.picture);
 
+    await this.usersService.removeTrackFromUploads(track.artistId, id);
+
     await this.trackModel.findByIdAndDelete(id);
 
     return track._id as ObjectId;
@@ -87,12 +89,12 @@ export class TrackService {
     return tracks;
   }
 
-  async like(id: string): Promise<void> {
+  async like(id: string, num: number): Promise<void> {
     const track = await this.trackModel.findById(id);
     if (!track) {
       throw new BadRequestException(`Track with id ${id} not found`);
     }
-    track.likes += 1;
+    track.likes += num;
     await track.save();
   }
 }

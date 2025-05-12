@@ -4,11 +4,14 @@ import {CreateTrackDto} from "./dto/create-track.dto";
 import {ObjectId} from "mongoose";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import { AuthGuard } from "src/utils/guards/auth.guard";
+import { RoleGuard } from "src/utils/guards/role.guard";
+import { Roles } from "src/utils/decorators/role.decorator";
 
 @Controller('/tracks')
 export class TrackController {
   constructor(private trackService: TrackService) {}
 
+//user requests
   @Post()
   @UseInterceptors(FileFieldsInterceptor([
     { name: 'picture', maxCount: 1 },
@@ -52,5 +55,14 @@ export class TrackController {
   @Post('/listen/:id')
   listen(@Param('id') id: ObjectId) {
     return this.trackService.listen(id);
+  }
+
+//admin requests
+  @Delete(':id')
+  @UseGuards(RoleGuard)
+  @Roles('admin')
+  deleteAdmin(@Req() req, @Param('id') id: ObjectId, @Query('userId') userId: string,) {
+    const userRole = req.user.role;
+    return this.trackService.delete(id, userId, userRole);
   }
 }

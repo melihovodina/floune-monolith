@@ -49,6 +49,13 @@ export class UsersController {
     return this.usersService.addTrackToFavorites(userId, trackId);
   }
 
+  @Patch('/unfavorite/:trackId')
+  @UseGuards(AuthGuard)
+  async removeTrackFromFavorites(@Req() req, @Param('trackId') trackId: string) {
+    const userId = req.user.id;
+    return this.usersService.removeTrackFromFavorites(userId, trackId);
+  }
+
 // admin requests
   @Post()
   @UseInterceptors(FileInterceptor('picture'))
