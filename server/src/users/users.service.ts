@@ -1,10 +1,10 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileService, FileType } from "../file/file.service";
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './entities/user.entity';
-import { Model, Types } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import { TrackService } from 'src/track/track.service';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private fileService: FileService,
-    private trackService: TrackService
+    @Inject(forwardRef(() => TrackService)) private trackService: TrackService,
   ) {}
 
   async create(createUserDto: CreateUserDto, picture?) {
@@ -138,16 +138,14 @@ export class UsersService {
     return user.likedTracks;
   }
 
-  async addTrackToUploads(userId: string, trackId: string) {
+  async addTrackToUploads(userId: string, trackId: ObjectId) {
     const user = await this.userModel.findById(userId).exec();
     
     if (!user) {
       throw new BadRequestException(`User with id ${userId} not found`);
     }
     
-    const trackObjectId = new Types.ObjectId(trackId);
-    
-    user.uploadedTracks.push(trackObjectId as any);
+    user.uploadedTracks.push(trackId);
     await user.save();
     
     return user.uploadedTracks;
