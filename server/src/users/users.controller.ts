@@ -7,6 +7,7 @@ import { RoleGuard } from 'src/utils/guards/role.guard';
 import { Roles } from 'src/utils/decorators/role.decorator';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { AuthGuard } from 'src/utils/guards/auth.guard';
+import { UsersSortBy } from 'src/utils/types';
 
 @Controller('users')
 export class UsersController {
@@ -14,8 +15,12 @@ export class UsersController {
 
 // users requests
   @Get()
-  findAll(@Query('count') count: number, @Query('offset') offset: number) {
-    return this.usersService.findAll(count, offset);
+  getAll(
+    @Query('count') count: number,
+    @Query('offset') offset: number,
+    @Query('sortBy') sortBy: UsersSortBy = 'createdAt'
+  ) {
+    return this.usersService.getAll(count, offset, sortBy);
   }
 
   @Get('/name/:name')

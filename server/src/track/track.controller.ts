@@ -6,6 +6,7 @@ import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import { AuthGuard } from "src/utils/guards/auth.guard";
 import { RoleGuard } from "src/utils/guards/role.guard";
 import { Roles } from "src/utils/decorators/role.decorator";
+import { TracksSortBy } from "src/utils/types";
 
 @Controller('/tracks')
 export class TrackController {
@@ -29,7 +30,7 @@ export class TrackController {
   getAll(
     @Query('count') count: number,
     @Query('offset') offset: number,
-    @Query('sortBy') sortBy: 'createdAt' | 'likes' | 'listens' = 'createdAt'
+    @Query('sortBy') sortBy: TracksSortBy = 'createdAt'
   ) {
     return this.trackService.getAll(count, offset, sortBy);
   }

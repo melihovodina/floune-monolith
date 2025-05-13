@@ -22,9 +22,9 @@ export const register = async (data: { email: string; password: string; name: st
   return axios.post(`${API_URL}/auth/registration`, data);
 };
 
-export const getAllUsers = async (count: number, offset: number) => {
-  return axiosInstance.get('/users', {
-    params: { count, offset },
+export const getAllUsers = async (count: number, offset: number, sortBy: 'createdAt' | 'likes' | 'listens' = 'createdAt') => {
+  return axiosInstance.get('users', {
+    params: { count, offset, sortBy },
   });
 };
 

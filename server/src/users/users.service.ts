@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './entities/user.entity';
 import { Model, ObjectId, Types } from 'mongoose';
 import { TrackService } from 'src/track/track.service';
+import { UsersSortBy } from 'src/utils/types';
 
 @Injectable()
 export class UsersService {
@@ -37,12 +38,29 @@ export class UsersService {
     return user;
   }
 
-  async findAll(count: number, offset: number) {
-    return this.userModel
-      .find()
-      .skip(offset)
-      .limit(count)
-      .exec();
+  async getAll(
+    count: number,
+    offset: number,
+    sortBy: UsersSortBy = 'createdAt'
+  ) {
+    const query: any = {};
+
+    if (['user', 'artist', 'admin'].includes(sortBy)) {
+      query.role = sortBy;
+    }
+
+    const sort: Record<string, 1 | -1> = {};
+    if (sortBy === 'followers' || sortBy === 'createdAt') {
+      sort[sortBy] = -1;
+    }
+
+    const users = await this.userModel
+      .find(query)
+      .sort(sort)
+      .skip(Number(offset))
+      .limit(Number(count));
+
+    return users;
   }
 
   async findOne(id: string, count?: number, offset?: number) {

@@ -29,10 +29,10 @@ export class User {
   uploadedTracks: ObjectId[];
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' }] })
-  likedAlbums: ObjectId[];
+  likedPlaylists: ObjectId[];
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' }] })
-  uploadedAlbums: ObjectId[];
+  uploadedPlaylists: ObjectId[];
 
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }] })
   following: ObjectId[];

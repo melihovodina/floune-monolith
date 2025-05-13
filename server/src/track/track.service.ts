@@ -5,6 +5,7 @@ import {Model, ObjectId} from "mongoose";
 import {CreateTrackDto} from "./dto/create-track.dto";
 import {FileService, FileType} from "../file/file.service";
 import { UsersService } from "src/users/users.service";
+import { TracksSortBy } from "src/utils/types";
 
 @Injectable()
 export class TrackService {
@@ -34,7 +35,7 @@ export class TrackService {
   async getAll(
     count = 10, 
     offset = 0, 
-    sortBy: 'createdAt' | 'likes' | 'listens' = 'createdAt'
+    sortBy: TracksSortBy = 'createdAt'
   ): Promise<Track[]> {
     const tracks = await this.trackModel
       .find()
