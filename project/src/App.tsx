@@ -4,7 +4,7 @@ import Home from './pages/Home';
 import Search from './pages/Search';
 import Library from './pages/Library';
 import Profile from './pages/Profile';
-import Auth from './pages/Auth';
+import SignIn from './pages/SignIn';
 import Upload from './pages/Upload';
 import Concerts from './pages/Concerts';
 import ConcertDetails from './pages/ConcertDetails';
@@ -14,7 +14,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/auth" element={<Auth />} />
+        <Route path="/signin" element={<SignIn />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="search" element={<Search />} />

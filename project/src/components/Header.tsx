@@ -31,7 +31,7 @@ const Header = ({ children }: HeaderProps) => {
           </button>
         ) : (
           <button
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/signin')}
             className="text-white bg-[#ff5500] hover:bg-orange-700 px-4 sm:px-6 py-2 rounded-full text-sm sm:text-base"
           >
             Log in
