@@ -1,5 +1,5 @@
 export interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   password?: string;
@@ -17,7 +17,7 @@ export interface User {
 }
 
 export interface Track {
-  id: string;
+  _id: string;
   name: string;
   artistName: string;
   artistId: string

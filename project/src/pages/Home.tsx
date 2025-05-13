@@ -1,13 +1,11 @@
 import { useState, useEffect } from 'react';
 import { getAllTracks } from '../api/api';
 import { Track } from '../types';
-import { Play, Heart } from 'lucide-react';
-import { usePlayer } from '../store/usePlayer';
+import TrackCard from '../components/TrackCard';
 
 export default function Home() {
   const [trendingTracks, setTrendingTracks] = useState<Track[]>([]);
   const [newReleases, setNewReleases] = useState<Track[]>([]);
-  const { setTrack } = usePlayer();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -28,10 +26,6 @@ export default function Home() {
     fetchTracks();
   }, []);
 
-  const handlePlayTrack = (track: Track) => {
-    setTrack(track);
-  };
-
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -48,30 +42,8 @@ export default function Home() {
           <a href="#" className="text-[#ff5500] hover:underline text-sm sm:text-base">See All</a>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {trendingTracks.map((track) => (
-            <div key={track.id} className="bg-[#1a1f25] rounded-lg overflow-hidden group">
-              <div className="relative aspect-square">
-                <img 
-                  src={`http://localhost:5000/${track.picture}`} 
-                  alt={track.name}
-                  className="w-full h-full object-cover"
-                />
-                <button 
-                  className="absolute bottom-4 right-4 w-10 h-10 bg-[#ff5500] rounded-full flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                  onClick={() => handlePlayTrack(track)}
-                >
-                  <Play className="text-white" size={20} />
-                </button>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-white truncate">{track.name}</h3>
-                <p className="text-sm text-zinc-400 truncate">{track.artistName}</p>
-                <div className="mt-2 flex items-center gap-2 text-zinc-400 text-sm">
-                  <Heart size={16} />
-                  <span>{track.likes}</span>
-                </div>
-              </div>
-            </div>
+          {trendingTracks.map((track, index) => (
+            <TrackCard key={index} track={track} queue={trendingTracks} />
           ))}
         </div>
       </section>
@@ -82,30 +54,8 @@ export default function Home() {
           <a href="#" className="text-[#ff5500] hover:underline text-sm sm:text-base">See All</a>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {newReleases.map((track) => (
-            <div key={track.id} className="bg-[#1a1f25] rounded-lg overflow-hidden group">
-              <div className="relative aspect-square">
-                <img 
-                  src={`http://localhost:5000/${track.picture}`} 
-                  alt={track.name}
-                  className="w-full h-full object-cover"
-                />
-                <button 
-                  className="absolute bottom-4 right-4 w-10 h-10 bg-[#ff5500] rounded-full flex items-center justify-center sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
-                  onClick={() => handlePlayTrack(track)}
-                >
-                  <Play className="text-white" size={20} />
-                </button>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-white truncate">{track.name}</h3>
-                <p className="text-sm text-zinc-400 truncate">{track.artistName}</p>
-                <div className="mt-2 flex items-center gap-2 text-zinc-400 text-sm">
-                  <Heart size={16} />
-                  <span>{track.likes}</span>
-                </div>
-              </div>
-            </div>
+          {newReleases.map((track, index) => (
+            <TrackCard key={index} track={track} queue={newReleases} />
           ))}
         </div>
       </section>

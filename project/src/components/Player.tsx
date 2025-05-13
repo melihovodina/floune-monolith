@@ -6,7 +6,15 @@ import { usePlayer } from '../store/usePlayer';
 const Player = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [progress, setProgress] = useState(0);
-  const { currentTrack, isPlaying, volume, setIsPlaying, setVolume } = usePlayer();
+  const {
+    currentTrack,
+    isPlaying,
+    volume,
+    setIsPlaying,
+    setVolume,
+    playNextTrack,
+    playPreviousTrack,
+  } = usePlayer();
 
   useEffect(() => {
     if (audioRef.current) {
@@ -58,7 +66,10 @@ const Player = () => {
         
         <div className="flex flex-col items-center gap-2 flex-1 w-full sm:max-w-[600px]">
           <div className="flex items-center gap-6">
-            <button className="text-zinc-400 hover:text-white">
+            <button
+              className="text-zinc-400 hover:text-white"
+              onClick={playPreviousTrack}
+            >
               <SkipBack size={24} />
             </button>
             <button
@@ -67,7 +78,10 @@ const Player = () => {
             >
               {isPlaying ? <Pause size={24} /> : <Play size={24} />}
             </button>
-            <button className="text-zinc-400 hover:text-white">
+            <button
+              className="text-zinc-400 hover:text-white"
+              onClick={playNextTrack}
+            >
               <SkipForward size={24} />
             </button>
           </div>
