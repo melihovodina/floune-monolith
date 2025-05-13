@@ -28,15 +28,22 @@ const Player = () => {
 
   useEffect(() => {
     if (audioRef.current) {
-      audioRef.current.volume = volume; // Применяем громкость
+      audioRef.current.volume = volume;
     }
   }, [volume]);
 
   const handleTimeUpdate = () => {
-    if (audioRef.current) {
+    if (audioRef.current && audioRef.current.duration) {
       const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
       setProgress(progress);
     }
+  };
+
+  const formatTime = (time: number) => {
+    if (isNaN(time) || time === Infinity) return '0:00';
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
   };
 
   const handleSeek = (value: number[]) => {
@@ -52,7 +59,7 @@ const Player = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[#1a1f25] border-t border-zinc-800 px-4 py-3">
       <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
-        <div className="flex items-center gap-4 w-full sm:w-auto">
+        <div className="flex items-center gap-4 w-full sm:w-auto max-w-[25%]">
           <img
             src={`http://localhost:5000/${currentTrack.picture}`}
             alt={currentTrack.name}
@@ -63,8 +70,8 @@ const Player = () => {
             <p className="text-sm text-zinc-400 truncate">{currentTrack.artistName}</p>
           </div>
         </div>
-        
-        <div className="flex flex-col items-center gap-2 flex-1 w-full sm:max-w-[600px]">
+
+        <div className="md:absolute md:left-1/2 md:transform md:-translate-x-1/2 md:max-w-[30%] w-full flex flex-col items-center gap-2 ">
           <div className="flex items-center gap-6">
             <button
               className="text-zinc-400 hover:text-white"
@@ -76,7 +83,7 @@ const Player = () => {
               className="text-white p-2 rounded-full bg-white/10 hover:bg-white/20"
               onClick={() => setIsPlaying(!isPlaying)}
             >
-              {isPlaying ? <Pause size={24} /> : <Play size={24} />}
+              {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-[2px]" />}
             </button>
             <button
               className="text-zinc-400 hover:text-white"
@@ -85,7 +92,7 @@ const Player = () => {
               <SkipForward size={24} />
             </button>
           </div>
-          
+
           <div className="w-full flex items-center gap-2">
             <span className="text-xs text-zinc-400">
               {audioRef.current ? formatTime(audioRef.current.currentTime) : '0:00'}
@@ -107,7 +114,7 @@ const Player = () => {
             </span>
           </div>
         </div>
-        
+
         <div className="hidden sm:flex items-center gap-2 min-w-[150px]">
           <Volume2 size={20} className="text-zinc-400" />
           <Slider.Root
@@ -124,7 +131,7 @@ const Player = () => {
           </Slider.Root>
         </div>
       </div>
-      
+
       <audio
         ref={audioRef}
         src={`http://localhost:5000/${currentTrack.audio}`}
@@ -133,12 +140,6 @@ const Player = () => {
       />
     </div>
   );
-};
-
-const formatTime = (time: number) => {
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60);
-  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
 export default Player;
