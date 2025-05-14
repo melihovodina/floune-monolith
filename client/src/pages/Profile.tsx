@@ -5,6 +5,13 @@ import { Track, User } from '../types';
 import TrackCard from '../components/TrackCard';
 import { useParams } from 'react-router-dom';
 import { UserPlus } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../store/useAuth';
+import { getProfile, getUserByName } from '../api/api';
+import { Track, User } from '../types';
+import TrackCard from '../components/TrackCard';
+import { useParams } from 'react-router-dom';
+import { UserPlus } from 'lucide-react';
 
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
