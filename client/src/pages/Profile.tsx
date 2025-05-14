@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../store/useAuth';
-import { getProfile, getUserByName } from '../api/api';
+import { getProfile, getUserByName, getTracksByIds } from '../api/api';
 import { Track, User } from '../types';
 import TrackCard from '../components/TrackCard';
 import { useParams } from 'react-router-dom';
@@ -25,7 +25,15 @@ export default function Profile() {
           userData = response.data;
         }
         setUser(userData);
-        setTracks(userData.uploadedTracks || []);
+        console.log(userData);
+
+        if (userData.uploadedTracks && userData.uploadedTracks.length > 0) {
+          const tracksResponse = await getTracksByIds(userData.uploadedTracks);
+          setTracks(tracksResponse.data);
+        } else {
+          setTracks([]);
+        }
+
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -35,9 +43,6 @@ export default function Profile() {
 
     fetchData();
   }, [name]);
-
-  console.log(currentUser?._id)
-  console.log(user?._id)
 
   if (isLoading) {
     return (
@@ -87,9 +92,9 @@ export default function Profile() {
       <div>
         <h2 className="text-2xl font-bold text-white mb-6">Uploaded Tracks</h2>
         {tracks.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             {tracks.map((track, index) => (
-              <TrackCard key={index} track={track} queue={tracks} />
+              <TrackCard key={index} track={track} queue={tracks} compact/>
             ))}
           </div>
         ) : (

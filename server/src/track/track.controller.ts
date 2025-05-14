@@ -45,6 +45,11 @@ export class TrackController {
     return this.trackService.getOne(id);
   }
 
+  @Post('/by-ids')
+  async getTracksByIds(@Body('ids') ids: string[]) {
+    return this.trackService.getTracksByIds(ids);
+  }
+
   @Delete(':id')
   @UseGuards(AuthGuard)
   delete(@Req() req, @Param('id') id: ObjectId) {

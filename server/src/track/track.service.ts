@@ -53,6 +53,10 @@ export class TrackService {
     return track;
   }
 
+  async getTracksByIds(ids: string[]) {
+    return this.trackModel.find({ _id: { $in: ids } });
+  }
+
   async delete(id: ObjectId, userId: string, userRole: string): Promise<ObjectId> {
     const track = await this.trackModel.findById(id);
 

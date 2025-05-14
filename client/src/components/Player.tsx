@@ -83,7 +83,7 @@ const Player = () => {
               className="text-white p-2 rounded-full bg-white/10 hover:bg-white/20"
               onClick={() => setIsPlaying(!isPlaying)}
             >
-              {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-[2px]" />}
+              {isPlaying ? <Pause size={24} fill="white"/> : <Play size={24} fill="white"/>}
             </button>
             <button
               className="text-zinc-400 hover:text-white"

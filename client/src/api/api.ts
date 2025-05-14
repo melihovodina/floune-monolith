@@ -69,6 +69,10 @@ export const getTrackById = async (id: string) => {
   return axiosInstance.get(`/tracks/${id}`);
 };
 
+export const getTracksByIds = async (ids: string[]) => {
+  return axiosInstance.post('/tracks/by-ids', { ids });
+};
+
 export const deleteTrack = async (id: string) => {
   return axiosInstance.delete(`/tracks/${id}`);
 };
