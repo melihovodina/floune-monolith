@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { TracksSortBy, UsersSortBy } from '../types';
 
 const API_URL = 'http://localhost:5000';
 export const axiosInstance = axios.create({
@@ -23,9 +22,9 @@ export const register = async (data: { email: string; password: string; name: st
   return axios.post(`${API_URL}/auth/registration`, data);
 };
 
-export const getAllUsers = async (count: number, offset: number, sortBy: UsersSortBy = 'createdAt') => {
-  return axiosInstance.get('users', {
-    params: { count, offset, sortBy },
+export const getAllUsers = async (count: number, offset: number) => {
+  return axiosInstance.get('/users', {
+    params: { count, offset },
   });
 };
 
@@ -53,9 +52,9 @@ export const createTrack = async (data: FormData) => {
   });
 };
 
-export const getAllTracks = async (count: number, offset: number, sortBy: TracksSortBy = 'createdAt') => {
+export const getAllTracks = async (count: number, offset: number) => {
   return axiosInstance.get('/tracks', {
-    params: { count, offset, sortBy },
+    params: { count, offset },
   });
 };
 

@@ -1,5 +1,5 @@
 export interface User {
-  _id: string;
+  id: string;
   name: string;
   email: string;
   password?: string;
@@ -17,7 +17,7 @@ export interface User {
 }
 
 export interface Track {
-  _id: string;
+  id: string;
   name: string;
   artistName: string;
   artistId: string
@@ -29,6 +29,3 @@ export interface Track {
   createdAt: string;
   updatedAt: string;
 }
-
-export type UsersSortBy = 'followers' | 'createdAt' | 'user' | 'artist' | 'admin';
-export type TracksSortBy = 'createdAt' | 'likes' | 'listens';
