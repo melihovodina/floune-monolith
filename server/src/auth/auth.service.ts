@@ -21,7 +21,8 @@ export class AuthService {
       name: user.name
     };
     return {
-        token: this.jwtService.sign(payload)
+      token: this.jwtService.sign(payload),
+      _id: user._id.toString()
     }
   }
 
@@ -39,15 +40,39 @@ export class AuthService {
   async registration(userDto: registrationDto) {
     const hashPassword = await bcrypt.hash(userDto.password, 5);
     try {
-      const user = await this.usersService.create({...userDto, password: hashPassword})
-      return this.generateToken(user)
+      const user = await this.usersService.create({ ...userDto, password: hashPassword });
+      const tokenData = await this.generateToken(user);
+      return {
+        ...tokenData,
+        likedTracks: user.likedTracks || []
+      };
     } catch (e) {
-      throw e
+      throw e;
     }
   }
 
   async login(userDto: loginDto) {
-    const user = await this.validateUser(userDto)
-    return this.generateToken(user)
+    const user = await this.validateUser(userDto);
+    const tokenData = await this.generateToken(user);
+    return {
+      ...tokenData,
+      likedTracks: user.likedTracks || []
+    };
+  }
+
+  async validateToken(token: string) {
+    try {
+      const decoded: any = this.jwtService.verify(token);
+      const user = await this.usersService.findOne(decoded.id);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+      return {
+        _id: user._id.toString(),
+        likedTracks: user.likedTracks || []
+      };
+    } catch (e) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }

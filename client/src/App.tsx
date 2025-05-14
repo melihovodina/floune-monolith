@@ -9,8 +9,35 @@ import Upload from './pages/Upload';
 import Concerts from './pages/Concerts';
 import ConcertDetails from './pages/ConcertDetails';
 import Orders from './pages/Orders';
+import { useAuth } from './store/useAuth';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 function App() {
+  const { setAuth } = useAuth();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('authUser');
+    if (!storedUser) return;
+
+    const user = JSON.parse(storedUser);
+    axios.post('http://localhost:5000/auth/validate', { token: user.token })
+      .then(res => {
+        if (res.data && (res.data._id || res.data.id) && Array.isArray(res.data.likedTracks)) {
+          setAuth({
+            token: user.token,
+            _id: res.data._id,
+            likedTracks: res.data.likedTracks
+          });
+        } else {
+          setAuth(null);
+        }
+      })
+      .catch(() => {
+        setAuth(null);
+      });
+  }, [setAuth]);
+
   return (
     <Router>
       <Routes>
@@ -20,6 +47,7 @@ function App() {
           <Route path="search" element={<Search />} />
           <Route path="library" element={<Library />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="profile/:name" element={<Profile />} />
           <Route path="upload" element={<Upload />} />
           <Route path="concerts" element={<Concerts />} />
           <Route path="concerts/:id" element={<ConcertDetails />} />

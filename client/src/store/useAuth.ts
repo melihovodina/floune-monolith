@@ -1,34 +1,38 @@
 import { create } from 'zustand';
-import { User } from '../types';
+
+interface AuthUser {
+  _id: string;
+  token: string;
+  likedTracks: string[];
+}
 
 interface AuthState {
-  user: User | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
-  setUser: (user: User | null) => void;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
+  setAuth: (user: AuthUser | null) => void;
+  logout: () => void;
 }
 
 export const useAuth = create<AuthState>((set) => {
-  const token = localStorage.getItem('token');
-  const user = token ? JSON.parse(localStorage.getItem('user') || 'null') : null;
+  const storedUser = localStorage.getItem('authUser');
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  const isAuthenticated = !!user?.token;
 
   return {
     user,
-    isAuthenticated: !!token,
-    setUser: (user) => {
+    isAuthenticated,
+    setAuth: (user) => {
       if (user) {
-        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('authUser', JSON.stringify(user));
+        set({ user, isAuthenticated: true });
       } else {
-        localStorage.removeItem('user');
+        localStorage.removeItem('authUser');
+        set({ user: null, isAuthenticated: false });
       }
-      set({ user });
     },
-    setIsAuthenticated: (isAuthenticated) => {
-      if (!isAuthenticated) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
-      set({ isAuthenticated });
+    logout: () => {
+      localStorage.removeItem('authUser');
+      set({ user: null, isAuthenticated: false });
     },
   };
 });

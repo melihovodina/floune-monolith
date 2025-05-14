@@ -59,7 +59,7 @@ const Player = () => {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[#1a1f25] border-t border-zinc-800 px-4 py-3">
       <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
-        <div className="flex items-center gap-4 w-full sm:w-auto max-w-[25%]">
+        <div className="flex items-center gap-4 w-full sm:w-auto sm:max-w-[25%]">
           <img
             src={`http://localhost:5000/${currentTrack.picture}`}
             alt={currentTrack.name}

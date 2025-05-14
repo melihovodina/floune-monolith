@@ -9,30 +9,29 @@ const SignIn: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setUser, setIsAuthenticated } = useAuth();
+  const { setAuth } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError(null);
-  setIsLoading(true);
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
 
-  try {
-    const response = await loginApi({ email, password });
-    const { user, token } = response.data;
+    try {
+      const response = await loginApi({ email, password });
+      const { token, _id, likedTracks } = response.data;
 
-    localStorage.setItem('token', token);
-    localStorage.setItem('user', JSON.stringify(user));
+      const authUser = { token, _id, likedTracks };
+      localStorage.setItem('authUser', JSON.stringify(authUser));
+      setAuth(authUser);
 
-    setUser(user);
-    setIsAuthenticated(true);
-    navigate('/');
-  } catch (err: any) {
-    setError(err.response?.data?.message || 'Failed to login');
-  } finally {
-    setIsLoading(false);
-  }
-};
+      navigate('/');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to login');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-gray-900">

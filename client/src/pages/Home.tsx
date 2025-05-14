@@ -85,7 +85,7 @@ export default function Home() {
       <div className="flex overflow-x-auto space-x-4 scrollbar-hide">
         {artists.map((artist) => (
           <div key={artist._id} className="flex-shrink-0">
-            <a href={`/artist/${artist._id}`} className="block group">
+            <a href={`/profile/${artist.name}`} className="block group">
               <div className="w-40 h-40 rounded-full overflow-hidden mb-2 border-2 border-transparent group-hover:border-orange-500 transition">
                 <img
                   src={artist.picture ? `http://localhost:5000/${artist.picture}` : '/blank.webp'}
