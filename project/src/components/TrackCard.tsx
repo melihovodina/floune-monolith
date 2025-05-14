@@ -27,7 +27,8 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue }) => {
         <img
           src={`http://localhost:5000/${track.picture}`}
           alt={track.name}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover select-none pointer-events-none"
+          draggable={false}
         />
         <button
           className={`absolute bottom-4 right-4 w-10 h-10 bg-[#ff5500] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition`}

@@ -63,14 +63,10 @@ export class UsersService {
     return users;
   }
 
-  async findOne(id: string, count?: number, offset?: number) {
+  async findOne(id: string) {
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new BadRequestException(`User with id ${id} not found`);
-    }
-
-    if (count && offset) {
-      user.likedTracks = user.likedTracks.slice(offset, offset + count);
     }
 
     return user;
