@@ -7,11 +7,13 @@ import {ServeStaticModule} from "@nestjs/serve-static";
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { PlaylistModule } from './playlist/playlist.module';
+import { config } from "dotenv";
+config({path: "./.env"})
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({rootPath: path.resolve(process.cwd(), 'static')}),
-    MongooseModule.forRoot('mongodb://localhost:27017/floune'),
+    MongooseModule.forRoot(process.env.MONGO_URI || 'mongodb://localhost:27017/floune'),
     TrackModule,
     FileModule,
     UsersModule,

@@ -1,7 +1,6 @@
 import {NestFactory} from "@nestjs/core";
 import {AppModule} from "./app.module";
 import { config } from "dotenv";
-import { join } from "path";
 config({path: "./.env"})
 
 const start = async () => {
