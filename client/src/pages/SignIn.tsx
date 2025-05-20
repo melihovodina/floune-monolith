@@ -19,10 +19,10 @@ const SignIn: React.FC = () => {
 
     try {
       const response = await loginApi({ email, password });
-      const { token, _id, likedTracks } = response.data;
+      const { token, _id, likedTracks, following } = response.data;
 
-      const authUser = { token, _id, likedTracks };
-      localStorage.setItem('authUser', JSON.stringify(authUser));
+      const authUser = { token, _id, likedTracks, following: following || [] };
+      localStorage.setItem('token', token);
       setAuth(authUser);
 
       navigate('/');

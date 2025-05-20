@@ -44,7 +44,8 @@ export class AuthService {
       const tokenData = await this.generateToken(user);
       return {
         ...tokenData,
-        likedTracks: user.likedTracks || []
+        likedTracks: user.likedTracks || [],
+        following: user.following || []
       };
     } catch (e) {
       throw e;
@@ -52,12 +53,17 @@ export class AuthService {
   }
 
   async login(userDto: loginDto) {
-    const user = await this.validateUser(userDto);
-    const tokenData = await this.generateToken(user);
-    return {
-      ...tokenData,
-      likedTracks: user.likedTracks || []
-    };
+    try {
+      const user = await this.validateUser(userDto);
+      const tokenData = await this.generateToken(user);
+      return {
+        ...tokenData,
+        likedTracks: user.likedTracks || [],
+        following: user.following || []
+      };
+    } catch (e) {
+      throw e;
+    }
   }
 
   async validateToken(token: string) {
@@ -69,7 +75,8 @@ export class AuthService {
       }
       return {
         _id: user._id.toString(),
-        likedTracks: user.likedTracks || []
+        likedTracks: user.likedTracks || [],
+        following: user.following || []
       };
     } catch (e) {
       throw new UnauthorizedException('Invalid token');

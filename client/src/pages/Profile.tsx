@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../store/useAuth';
-import { getProfile, getUserByName, getTracksByIds } from '../api/api';
+import { getProfile, getUserByName, getTracksByIds, followUser, unfollowUser } from '../api/api';
 import { Track, User } from '../types';
 import TrackCard from '../components/TrackCard';
 import { useParams } from 'react-router-dom';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, UserMinus } from 'lucide-react';
 
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, setAuth } = useAuth();
   const { name } = useParams();
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,7 +26,6 @@ export default function Profile() {
           userData = response.data;
         }
         setUser(userData);
-        console.log(userData);
 
         if (userData.uploadedTracks && userData.uploadedTracks.length > 0) {
           const tracksResponse = await getTracksByIds(userData.uploadedTracks);
@@ -43,6 +43,43 @@ export default function Profile() {
 
     fetchData();
   }, [name]);
+
+  const isFollowing = currentUser && user
+    ? currentUser.following.includes(user._id)
+    : false;
+
+  const handleFollowToggle = async () => {
+    if (!currentUser || !user) return;
+    setIsProcessing(true);
+    try {
+      if (isFollowing) {
+        const res = await unfollowUser(user._id);
+        setAuth({
+          ...currentUser,
+          following: res.data,
+        });
+        setUser({
+          ...user,
+          followers: Math.max(0, user.followers - 1),
+        });
+      } else {
+        const res = await followUser(user._id);
+        setAuth({
+          ...currentUser,
+          following: res.data,
+        });
+        setUser({
+          ...user,
+          followers: user.followers + 1,  
+        });
+      }
+    } catch (error) {
+      console.error('Error while following to user:', error);
+      setIsProcessing(false);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -79,9 +116,24 @@ export default function Profile() {
                 <span className="text-white">{user.followers}</span> followers
               </div>
               {currentUser && currentUser._id !== user._id && (
-                <button className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-full flex items-center gap-2">
-                  <UserPlus size={20} />
-                  Follow
+                <button
+                  className={`px-6 py-2 rounded-full flex items-center gap-2 transition ${
+                    isFollowing
+                      ? 'bg-zinc-700 hover:bg-zinc-800 text-white'
+                      : 'bg-orange-500 hover:bg-orange-600 text-white'
+                  }`}
+                  onClick={handleFollowToggle}
+                  disabled={isProcessing}
+                >
+                  {isFollowing ? (
+                    <>
+                      <UserMinus size={20} /> Unfollow
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus size={20} /> Follow
+                    </>
+                  )}
                 </button>
               )}
             </div>
@@ -103,4 +155,4 @@ export default function Profile() {
       </div>
     </div>
   );
-}
+}     

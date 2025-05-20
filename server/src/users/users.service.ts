@@ -193,6 +193,58 @@ export class UsersService {
     return user.uploadedTracks;
   }
 
+  async followUser(currentUserId: string, targetUserId: string) {
+    if (currentUserId === targetUserId) {
+      throw new BadRequestException('You cannot follow yourself');
+    }
+
+    const currentUser = await this.userModel.findById(currentUserId).exec();
+    const targetUser = await this.userModel.findById(targetUserId).exec();
+
+    if (!currentUser || !targetUser) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (currentUser.following.includes(targetUserId as any)) {
+      throw new BadRequestException('Already following this user');
+    }
+
+    currentUser.following.push(targetUserId as any);
+    targetUser.followers += 1;
+
+    await currentUser.save();
+    await targetUser.save();
+
+    return currentUser.following;
+  }
+
+  async unfollowUser(currentUserId: string, targetUserId: string) {
+    if (currentUserId === targetUserId) {
+      throw new BadRequestException('You cannot unfollow yourself');
+    }
+
+    const currentUser = await this.userModel.findById(currentUserId).exec();
+    const targetUser = await this.userModel.findById(targetUserId).exec();
+
+    if (!currentUser || !targetUser) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (!currentUser.following.includes(targetUserId as any)) {
+      throw new BadRequestException('You are not following this user');
+    }
+
+    currentUser.following = currentUser.following.filter(
+      (id) => id.toString() !== targetUserId
+    );
+    targetUser.followers = Math.max(0, targetUser.followers - 1);
+
+    await currentUser.save();
+    await targetUser.save();
+
+    return currentUser.following;
+  }
+
   async banUser(id: string) {
     const user = await this.userModel.findById(id).exec();
     if (!user) {

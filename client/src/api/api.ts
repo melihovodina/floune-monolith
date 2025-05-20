@@ -47,10 +47,16 @@ export const addTrackToFavorites = async (trackId: string) => {
   return axiosInstance.patch(`/users/favorite/${trackId}`);
 };
 
-export const createTrack = async (data: FormData) => {
-  return axiosInstance.post('/tracks', data, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+export const removeTrackFromFavorites = async (trackId: string) => {
+  return axiosInstance.patch(`/users/unfavorite/${trackId}`);
+};
+
+export const followUser = async (targetUserId: string) => {
+  return axiosInstance.patch(`/users/follow/${targetUserId}`);
+};
+
+export const unfollowUser = async (targetUserId: string) => {
+  return axiosInstance.patch(`/users/unfollow/${targetUserId}`);
 };
 
 export const getAllTracks = async (count: number, offset: number, sortBy: TracksSortBy = 'createdAt') => {
@@ -71,6 +77,12 @@ export const getTrackById = async (id: string) => {
 
 export const getTracksByIds = async (ids: string[]) => {
   return axiosInstance.post('/tracks/by-ids', { ids });
+};
+
+export const createTrack = async (data: FormData) => {
+  return axiosInstance.post('/tracks', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
 };
 
 export const deleteTrack = async (id: string) => {

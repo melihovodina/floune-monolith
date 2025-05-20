@@ -61,6 +61,20 @@ export class UsersController {
     return this.usersService.removeTrackFromFavorites(userId, trackId);
   }
 
+  @Patch('/follow/:targetUserId')
+  @UseGuards(AuthGuard)
+  async followUser(@Req() req, @Param('targetUserId') targetUserId: string) {
+    const currentUserId = req.user.id;
+    return this.usersService.followUser(currentUserId, targetUserId);
+  }
+
+  @Patch('/unfollow/:targetUserId')
+  @UseGuards(AuthGuard)
+  async unfollowUser(@Req() req, @Param('targetUserId') targetUserId: string) {
+    const currentUserId = req.user.id;
+    return this.usersService.unfollowUser(currentUserId, targetUserId);
+  }
+
 // admin requests
   @Post()
   @UseInterceptors(FileInterceptor('picture'))

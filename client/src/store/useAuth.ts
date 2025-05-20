@@ -4,6 +4,7 @@ interface AuthUser {
   _id: string;
   token: string;
   likedTracks: string[];
+  following: string[];
 }
 
 interface AuthState {
@@ -14,24 +15,26 @@ interface AuthState {
 }
 
 export const useAuth = create<AuthState>((set) => {
-  const storedUser = localStorage.getItem('authUser');
-  const user = storedUser ? JSON.parse(storedUser) : null;
-  const isAuthenticated = !!user?.token;
+  const token = localStorage.getItem('token');
+  const user = token
+    ? { _id: '', token, likedTracks: [], following: [] }
+    : null;
+  const isAuthenticated = !!token;
 
   return {
     user,
     isAuthenticated,
     setAuth: (user) => {
       if (user) {
-        localStorage.setItem('authUser', JSON.stringify(user));
+        localStorage.setItem('token', user.token);
         set({ user, isAuthenticated: true });
       } else {
-        localStorage.removeItem('authUser');
+        localStorage.removeItem('token');
         set({ user: null, isAuthenticated: false });
       }
     },
     logout: () => {
-      localStorage.removeItem('authUser');
+      localStorage.removeItem('token');
       set({ user: null, isAuthenticated: false });
     },
   };

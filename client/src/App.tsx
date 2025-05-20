@@ -17,17 +17,22 @@ function App() {
   const { setAuth } = useAuth();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('authUser');
-    if (!storedUser) return;
+    const token = localStorage.getItem('token');
+    if (!token) return;
 
-    const user = JSON.parse(storedUser);
-    axios.post('http://localhost:5000/auth/validate', { token: user.token })
+    axios.post('http://localhost:5000/auth/validate', { token })
       .then(res => {
-        if (res.data && (res.data._id || res.data.id) && Array.isArray(res.data.likedTracks)) {
+        if (
+          res.data &&
+          res.data._id &&
+          Array.isArray(res.data.likedTracks) &&
+          Array.isArray(res.data.following)
+        ) {
           setAuth({
-            token: user.token,
+            token,
             _id: res.data._id,
-            likedTracks: res.data.likedTracks
+            likedTracks: res.data.likedTracks,
+            following: res.data.following
           });
         } else {
           setAuth(null);
