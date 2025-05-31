@@ -83,8 +83,8 @@ export default function Home() {
         </a>
       </div>
       <div className="flex overflow-x-auto space-x-4 scrollbar-hide">
-        {artists.map((artist) => (
-          <div key={artist._id} className="flex-shrink-0">
+        {artists.map((artist, index) => (
+          <div key={index} className="flex-shrink-0">
             <a href={`/profile/${artist.name}`} className="block group">
               <div className="w-40 h-40 rounded-full overflow-hidden mb-2 border-2 border-transparent group-hover:border-orange-500 transition">
                 <img

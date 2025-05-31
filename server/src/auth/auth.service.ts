@@ -27,7 +27,7 @@ export class AuthService {
   }
 
   private async validateUser(userDto: loginDto) {
-    const user = await this.usersService.findByEmail(userDto.email)
+    const user = await this.usersService.findOne('email', userDto.email, true)
     const passwordEquals = await bcrypt.compare(userDto.password, user.password)
     
     if (user && passwordEquals) {
@@ -69,7 +69,7 @@ export class AuthService {
   async validateToken(token: string) {
     try {
       const decoded: any = this.jwtService.verify(token);
-      const user = await this.usersService.findOne(decoded.id);
+      const user = await this.usersService.findOne('id', decoded.id, true);
       if (!user) {
         throw new UnauthorizedException('User not found');
       }

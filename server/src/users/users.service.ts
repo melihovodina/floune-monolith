@@ -41,7 +41,8 @@ export class UsersService {
   async getAll(
     count: number,
     offset: number,
-    sortBy: UsersSortBy = 'createdAt'
+    sortBy: UsersSortBy = 'createdAt',
+    full: boolean = false
   ) {
     const query: any = {};
 
@@ -54,39 +55,38 @@ export class UsersService {
       sort[sortBy] = -1;
     }
 
-    const users = await this.userModel
+    let usersQuery = this.userModel
       .find(query)
       .sort(sort)
       .skip(Number(offset))
       .limit(Number(count));
 
+    if (!full) {
+      usersQuery.select('name picture followers role');
+    }
+
+    const users = await usersQuery.lean();
+
     return users;
   }
 
-  async findOne(id: string) {
-    const user = await this.userModel.findById(id).exec();
-    if (!user) {
-      throw new BadRequestException(`User with id ${id} not found`);
+  async findOne(field: 'id' | 'name' | 'email', value: string, full: boolean = false) {
+    let query: any = {};
+    if (field === 'id') {
+      query._id = value;
+    } else {
+      query[field] = value;
     }
 
-    return user;
-  }
-
-  async findByName(name: string) {
-    const user = await this.userModel.findOne({ name }).exec();
-    if (!user) {
-      throw new BadRequestException(`User with name ${name} not found`);
+    let userQuery = this.userModel.findOne(query);
+    if (!full) {
+      userQuery.select('name picture followers role uploadedTracks');
     }
 
-    return user;
-  }
-
-  async findByEmail(email: string) {
-    const user = await this.userModel.findOne({ email }).exec();
+    const user = await userQuery.lean();
     if (!user) {
-      throw new BadRequestException(`User with email ${email} not found`);
+      throw new BadRequestException(`User with ${field} ${value} not found`);
     }
-
     return user;
   }
 
@@ -117,15 +117,23 @@ export class UsersService {
       picturePath = await this.fileService.createFile(FileType.IMAGE, picture);
     }
   
+    if (updateUserDto.removePicture) {
+      if (user.picture) {
+        this.fileService.removeFile(user.picture);
+      }
+      picturePath = undefined;
+    }
+
     const updatedData = {
       ...updateUserDto,
-      ...(picturePath && { picture: picturePath }),
+      ...(picturePath !== undefined ? { picture: picturePath } : {}),
+      ...(updateUserDto.removePicture ? { picture: undefined } : {}),
     };
-  
+
     const updatedUser = await this.userModel.findByIdAndUpdate(id, updatedData, {
       new: true,
     }).exec();
-  
+
     return updatedUser;
   }
 

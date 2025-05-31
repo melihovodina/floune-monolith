@@ -15,4 +15,8 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   @IsArray()
   @IsOptional()
   uploadedTracks?: ObjectId[];
+  
+  @IsOptional()
+  @IsBoolean()
+  removePicture?: boolean;
 }

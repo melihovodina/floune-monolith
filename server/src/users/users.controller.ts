@@ -15,24 +15,34 @@ export class UsersController {
 
 // users requests
   @Get()
+  @UseGuards(AuthGuard)
   getAll(
+    @Req() req,
     @Query('count') count: number,
     @Query('offset') offset: number,
-    @Query('sortBy') sortBy: UsersSortBy = 'createdAt'
+    @Query('sortBy') sortBy: UsersSortBy = 'createdAt',
+    @Query('full') full: string
   ) {
-    return this.usersService.getAll(count, offset, sortBy);
+    const isAdmin = req.user?.role === 'admin';
+    const needFull = isAdmin && full === 'true';
+    return this.usersService.getAll(count, offset, sortBy, needFull);
   }
 
   @Get('/name/:name')
-  findByName(@Param('name') name: string) {
-    return this.usersService.findByName(name);
+  @UseGuards(AuthGuard)
+  findByName(@Req() req, @Param('name') name: string, @Query('full') full: string) {
+    const isAdmin = req.user?.role === 'admin';
+    const needFull = isAdmin && full === 'true';
+    return this.usersService.findOne('name', name, needFull);
   }
 
   @Get('/profile')
   @UseGuards(AuthGuard)
-  getProfile(@Req() req,) {
+  getProfile(@Req() req, @Query('full') full: string) {
     const userId = req.user.id;
-    return this.usersService.findOne(userId);
+    const isAdmin = req.user?.role === 'admin';
+    const needFull = isAdmin && full === 'true';
+    return this.usersService.findOne('id', userId, needFull);
   }
 
   @Patch('/profile')
@@ -88,7 +98,7 @@ export class UsersController {
   @UseGuards(RoleGuard)
   @Roles('admin')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+    return this.usersService.findOne('id', id, true);
   }
 
   @Patch(':id')

@@ -5,13 +5,13 @@ import Search from './pages/Search';
 import Library from './pages/Library';
 import Profile from './pages/Profile';
 import SignIn from './pages/SignIn';
-import Upload from './pages/Upload';
 import Concerts from './pages/Concerts';
 import ConcertDetails from './pages/ConcertDetails';
 import Orders from './pages/Orders';
 import { useAuth } from './store/useAuth';
 import { useEffect } from 'react';
 import axios from 'axios';
+import UploadTrack from './pages/UploadTrack';
 
 function App() {
   const { setAuth } = useAuth();
@@ -53,7 +53,7 @@ function App() {
           <Route path="library" element={<Library />} />
           <Route path="profile" element={<Profile />} />
           <Route path="profile/:name" element={<Profile />} />
-          <Route path="upload" element={<Upload />} />
+          <Route path="upload" element={<UploadTrack />} />
           <Route path="concerts" element={<Concerts />} />
           <Route path="concerts/:id" element={<ConcertDetails />} />
           <Route path="orders" element={<Orders />} />
