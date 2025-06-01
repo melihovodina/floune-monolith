@@ -104,7 +104,7 @@ export class UsersService {
         ]
       });
 
-      if (existingUser) {
+      if (existingUser && existingUser._id.toString() !== id) {
         throw new BadRequestException('User with this email or name already exists');
       }
     }
@@ -117,22 +117,30 @@ export class UsersService {
       picturePath = await this.fileService.createFile(FileType.IMAGE, picture);
     }
 
+    let updateQuery: any = { ...updateUserDto };
+    if (picturePath !== undefined) {
+      updateQuery.picture = picturePath;
+    }
+
+    let updateOptions = { new: true };
+
+    let updatedUser;
     if (updateUserDto.removePicture) {
       if (user.picture) {
         this.fileService.removeFile(user.picture);
       }
-      picturePath = undefined;
+      updatedUser = await this.userModel.findByIdAndUpdate(
+        id,
+        { ...updateQuery, $unset: { picture: 1 } },
+        updateOptions
+      ).lean();
+    } else {
+      updatedUser = await this.userModel.findByIdAndUpdate(
+        id,
+        updateQuery,
+        updateOptions
+      ).lean();
     }
-
-    const updatedData = {
-      ...updateUserDto,
-      ...(picturePath !== undefined ? { picture: picturePath } : {}),
-      ...(updateUserDto.removePicture ? { picture: undefined } : {}),
-    };
-
-    const updatedUser = await this.userModel.findByIdAndUpdate(id, updatedData, {
-      new: true,
-    }).lean();
 
     if (!updatedUser) {
       throw new BadRequestException(`User with id ${id} not found after update`);

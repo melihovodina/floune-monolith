@@ -18,6 +18,7 @@ export default function Profile() {
   const [newAvatar, setNewAvatar] = useState<File | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [removeAvatar, setRemoveAvatar] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +96,7 @@ export default function Profile() {
     setEditMode(false);
     setNewAvatar(null);
     setNewName(user?.name || '');
+    setRemoveAvatar(false);
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,11 +113,13 @@ export default function Profile() {
       const formData = new FormData();
       if (newName && newName !== user.name) formData.append('name', newName);
       if (newAvatar) formData.append('picture', newAvatar);
+      if (removeAvatar) formData.append('removePicture', 'true');
 
       const res = await updateProfile(formData);
       setUser(res.data);
       setEditMode(false);
       setNewAvatar(null);
+      setRemoveAvatar(false);
     } catch (error) {
       console.error('Error updating profile:', error);
     } finally {
@@ -149,9 +153,9 @@ return (
                 src={
                   newAvatar
                     ? URL.createObjectURL(newAvatar)
-                    : user.picture
-                    ? `http://localhost:5000/${user.picture}`
-                    : '/blank.webp'
+                    : !user.picture || removeAvatar
+                    ? '/blank.webp'
+                    : `http://localhost:5000/${user.picture}`
                 }
                 alt={user.name}
                 className="w-full h-full object-cover"
@@ -192,13 +196,29 @@ return (
                     Cancel
                   </button>
                 </div>
-                <button
-                  className="mt-3 bg-orange-500 text-white px-4 py-2 rounded text-sm font-medium"
-                  onClick={() => fileInputRef.current?.click()}
-                  type="button"
-                >
-                  Upload new avatar
-                </button>
+                <div className="flex gap-2 mt-3">
+                  <button
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+                    onClick={() => fileInputRef.current?.click()}
+                    type="button"
+                    disabled={isUpdating}
+                  >
+                    Upload new avatar
+                  </button>
+                  {user.picture && !removeAvatar && (
+                    <button
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                      type="button"
+                      disabled={isUpdating}
+                      onClick={() => {
+                        setRemoveAvatar(true);
+                        setNewAvatar(null);
+                      }}
+                    >
+                      Remove avatar
+                    </button>
+                  )}
+                </div>
               </form>
             ) : (
               <>
