@@ -31,6 +31,7 @@ function App() {
           setAuth({
             token,
             _id: res.data._id,
+            name: res.data.name,
             likedTracks: res.data.likedTracks,
             following: res.data.following
           });

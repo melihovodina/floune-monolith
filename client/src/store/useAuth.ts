@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 interface AuthUser {
   _id: string;
+  name: string;
   token: string;
   likedTracks: string[];
   following: string[];
@@ -16,9 +17,7 @@ interface AuthState {
 
 export const useAuth = create<AuthState>((set) => {
   const token = localStorage.getItem('token');
-  const user = token
-    ? { _id: '', token, likedTracks: [], following: [] }
-    : null;
+  const user: AuthUser | null = null;
   const isAuthenticated = !!token;
 
   return {

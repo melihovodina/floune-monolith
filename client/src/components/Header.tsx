@@ -9,7 +9,7 @@ interface HeaderProps {
 
 const Header = ({ children }: HeaderProps) => {
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   return (
     <header className="bg-[#1a1f25] px-4 sm:px-6 py-4">
@@ -22,12 +22,7 @@ const Header = ({ children }: HeaderProps) => {
             onClick={() => navigate('/profile')}
             className="flex items-center gap-2 text-white hover:bg-[#2a2f35] px-4 py-2 rounded-full"
           >
-            {user?.picture ? (
-              <img src={user.picture} alt={user.name} className="w-8 h-8 rounded-full" />
-            ) : (
-              <User size={20} />
-            )}
-            <span className="hidden sm:inline">{user?.name}</span>
+            <User size={20} />
           </button>
         ) : (
           <button

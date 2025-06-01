@@ -22,7 +22,8 @@ export class AuthService {
     };
     return {
       token: this.jwtService.sign(payload),
-      _id: user._id.toString()
+      _id: user._id.toString(),
+      name: user.name
     }
   }
 
@@ -75,6 +76,7 @@ export class AuthService {
       }
       return {
         _id: user._id.toString(),
+        name: user.name,
         likedTracks: user.likedTracks || [],
         following: user.following || []
       };

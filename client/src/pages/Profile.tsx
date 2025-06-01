@@ -144,63 +144,63 @@ return (
       <div className="bg-[#1a1f25] rounded-lg p-8 mb-8">
         <div className="flex flex-col md:flex-row items-center gap-8">
           <div className="flex flex-col items-center">
-  <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-orange-500 relative">
-    <img
-      src={
-        newAvatar
-          ? URL.createObjectURL(newAvatar)
-          : user.picture
-          ? `http://localhost:5000/${user.picture}`
-          : '/blank.webp'
-      }
-      alt={user.name}
-      className="w-full h-full object-cover"
-    />
-    <input
-      type="file"
-      accept="image/*"
-      ref={fileInputRef}
-      className="hidden"
-      onChange={handleAvatarChange}
-    />
-  </div>
-</div>
-<div className="flex-1 text-center md:text-left">
-  {editMode ? (
-    <form onSubmit={handleProfileUpdate} className="flex flex-col gap-2 items-center md:items-start">
-      <input
-        type="text"
-        value={newName}
-        onChange={e => setNewName(e.target.value)}
-        className="px-3 py-2 rounded bg-zinc-800 text-white"
-        disabled={isUpdating}
-      />
-      <div className="flex gap-2 mt-2">
-        <button
-          type="submit"
-          className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
-          disabled={isUpdating}
-        >
-          Save
-        </button>
-        <button
-          type="button"
-          className="bg-zinc-700 hover:bg-zinc-800 text-white px-4 py-2 rounded"
-          onClick={handleCancelEdit}
-          disabled={isUpdating}
-        >
-          Cancel
-        </button>
-      </div>
-      <button
-        className="mt-3 bg-orange-500 text-white px-4 py-2 rounded text-sm font-medium"
-        onClick={() => fileInputRef.current?.click()}
-        type="button"
-      >
-        Upload new avatar
-      </button>
-    </form>
-  ) : (
+            <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-orange-500 relative">
+              <img
+                src={
+                  newAvatar
+                    ? URL.createObjectURL(newAvatar)
+                    : user.picture
+                    ? `http://localhost:5000/${user.picture}`
+                    : '/blank.webp'
+                }
+                alt={user.name}
+                className="w-full h-full object-cover"
+              />
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleAvatarChange}
+              />
+            </div>
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            {editMode ? (
+              <form onSubmit={handleProfileUpdate} className="flex flex-col gap-2 items-center md:items-start">
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={e => setNewName(e.target.value)}
+                  className="px-3 py-2 rounded bg-zinc-800 text-white"
+                  disabled={isUpdating}
+                />
+                <div className="flex gap-2 mt-2">
+                  <button
+                    type="submit"
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+                    disabled={isUpdating}
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-zinc-700 hover:bg-zinc-800 text-white px-4 py-2 rounded"
+                    onClick={handleCancelEdit}
+                    disabled={isUpdating}
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <button
+                  className="mt-3 bg-orange-500 text-white px-4 py-2 rounded text-sm font-medium"
+                  onClick={() => fileInputRef.current?.click()}
+                  type="button"
+                >
+                  Upload new avatar
+                </button>
+              </form>
+            ) : (
               <>
                 <h1 className="text-3xl font-bold text-white mb-2">{user.name}</h1>
                 <p className="text-zinc-400 mb-1 sm:mb-2 capitalize">{user.role}</p>
@@ -208,7 +208,7 @@ return (
                   <div className="text-zinc-400">
                     <span className="text-white">{user.followers}</span> followers
                   </div>
-                  {currentUser && currentUser._id === user._id && (
+                  {currentUser && currentUser.name === user.name && (
                     <button
                       className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
                       onClick={handleEditClick}
@@ -216,7 +216,7 @@ return (
                       Change profile
                     </button>
                   )}
-                  {currentUser && currentUser._id !== user._id && (
+                  {currentUser && currentUser.name !== user.name && (
                     <button
                       className={`px-6 py-2 rounded-full flex items-center gap-2 transition ${
                         isFollowing
