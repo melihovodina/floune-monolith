@@ -61,28 +61,28 @@ export class UsersController {
   @UseGuards(AuthGuard)
   async addTrackToFavorites(@Req() req, @Param('trackId') trackId: string) {
     const userId = req.user.id;
-    return this.usersService.addTrackToFavorites(userId, trackId);
+    return this.usersService.toggleTrackFavorite(userId, trackId, true);
   }
 
   @Patch('/unfavorite/:trackId')
   @UseGuards(AuthGuard)
   async removeTrackFromFavorites(@Req() req, @Param('trackId') trackId: string) {
     const userId = req.user.id;
-    return this.usersService.removeTrackFromFavorites(userId, trackId);
+    return this.usersService.toggleTrackFavorite(userId, trackId);
   }
 
   @Patch('/follow/:targetUserId')
   @UseGuards(AuthGuard)
   async followUser(@Req() req, @Param('targetUserId') targetUserId: string) {
     const currentUserId = req.user.id;
-    return this.usersService.followUser(currentUserId, targetUserId);
+    return this.usersService.toggleUserFollows(currentUserId, targetUserId, true);
   }
 
   @Patch('/unfollow/:targetUserId')
   @UseGuards(AuthGuard)
   async unfollowUser(@Req() req, @Param('targetUserId') targetUserId: string) {
     const currentUserId = req.user.id;
-    return this.usersService.unfollowUser(currentUserId, targetUserId);
+    return this.usersService.toggleUserFollows(currentUserId, targetUserId);
   }
 
 // admin requests
@@ -110,7 +110,7 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @UploadedFile() picture?
   ) {
-    return this.usersService.update(id, updateUserDto, picture);
+    return this.usersService.update(id, updateUserDto, picture, true);
   }
 
   @Patch('/ban/:id')

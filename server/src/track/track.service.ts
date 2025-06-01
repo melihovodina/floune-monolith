@@ -27,7 +27,7 @@ export class TrackService {
     picture: picturePath,
   });
 
-  await this.usersService.addTrackToUploads(userId, track.id);
+  await this.usersService.toggleTrackInUploads(userId, track.id, true);
 
   return track;
 }
@@ -71,7 +71,7 @@ export class TrackService {
     this.fileService.removeFile(track.audio);
     this.fileService.removeFile(track.picture);
 
-    await this.usersService.removeTrackFromUploads(track.artistId, id);
+    await this.usersService.toggleTrackInUploads(track.artistId.toString(), id);
 
     await this.trackModel.findByIdAndDelete(id);
 

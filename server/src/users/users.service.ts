@@ -90,12 +90,12 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto, picture?) {
+  async update(id: string, updateUserDto: UpdateUserDto, picture?, full: boolean = false) {
     const user = await this.userModel.findById(id).exec();
     if (!user) {
       throw new BadRequestException(`User with id ${id} not found`);
     }
-  
+
     if (updateUserDto.email || updateUserDto.name) {
       const existingUser = await this.userModel.findOne({
         $or: [
@@ -103,12 +103,12 @@ export class UsersService {
           { name: updateUserDto.name },
         ]
       });
-  
+
       if (existingUser) {
         throw new BadRequestException('User with this email or name already exists');
       }
     }
-  
+
     let picturePath: string | undefined;
     if (picture) {
       if (user.picture) {
@@ -116,7 +116,7 @@ export class UsersService {
       }
       picturePath = await this.fileService.createFile(FileType.IMAGE, picture);
     }
-  
+
     if (updateUserDto.removePicture) {
       if (user.picture) {
         this.fileService.removeFile(user.picture);
@@ -132,78 +132,67 @@ export class UsersService {
 
     const updatedUser = await this.userModel.findByIdAndUpdate(id, updatedData, {
       new: true,
-    }).exec();
+    }).lean();
+
+    if (!updatedUser) {
+      throw new BadRequestException(`User with id ${id} not found after update`);
+    }
+
+    if (!full) {
+      const { name, picture, followers, role, uploadedTracks } = updatedUser;
+      return { name, picture, followers, role, uploadedTracks };
+    }
 
     return updatedUser;
   }
 
-  async addTrackToFavorites(userId: string, trackId: string) {
-    const user = await this.userModel.findById(userId).exec();
-    if (!user) {
-      throw new BadRequestException(`User with id ${userId} not found`);
-    }
-    
-    if (user.likedTracks.some((id) => id.toString() === trackId)) {
-      throw new BadRequestException(`Track is already in favorites`);
-    }
-    
-    user.likedTracks.push(trackId as any);
-    await user.save();
-
-    await this.trackService.like(trackId, 1);
-    
-    return user.likedTracks;
-  }
-
-  async removeTrackFromFavorites(userId: string, trackId: string) {
+  async toggleTrackFavorite(userId: string, trackId: string, add: boolean = false) {
     const user = await this.userModel.findById(userId).exec();
     if (!user) {
       throw new BadRequestException(`User with id ${userId} not found`);
     }
 
-    if (!user.likedTracks.some((id) => id.toString() === trackId)) {
-      throw new BadRequestException(`Track is not in favorites`);
+    if (add) {
+      if (!user.likedTracks.some((id) => id.toString() === trackId)) {
+        user.likedTracks.push(trackId as any);
+        await user.save();
+        await this.trackService.like(trackId, 1);
+      }
+      return { likedTracks: user.likedTracks, action: 'added' };
+    } else {
+      user.likedTracks = user.likedTracks.filter(
+        (likedTrackId) => likedTrackId.toString() !== trackId
+      );
+      await user.save();
+      await this.trackService.like(trackId, -1);
+      return { likedTracks: user.likedTracks, action: 'removed' };
     }
-
-    user.likedTracks = user.likedTracks.filter(
-      (likedTrackId) => likedTrackId.toString() !== trackId
-    );
-    await user.save();
-
-    await this.trackService.like(trackId, -1);
-
-    return user.likedTracks;
   }
 
-  async addTrackToUploads(userId: string, trackId: ObjectId) {
-    const user = await this.userModel.findById(userId).exec();
-    if (!user) {
-      throw new BadRequestException(`User with id ${userId} not found`);
-    }
-    
-    user.uploadedTracks.push(trackId);
-    await user.save();
-    
-    return user.uploadedTracks;
-  }
-
-  async removeTrackFromUploads(userId: ObjectId, trackId: ObjectId) {
+  async toggleTrackInUploads(userId: string, trackId: ObjectId, add: boolean = false) {
     const user = await this.userModel.findById(userId).exec();
     if (!user) {
       throw new BadRequestException(`User with id ${userId} not found`);
     }
 
-    user.uploadedTracks = user.uploadedTracks.filter(
-      (uploadedTrackId) => uploadedTrackId.toString() !== trackId.toString()
-    );
-    await user.save();
-
-    return user.uploadedTracks;
+    if (add) {
+      if (!user.uploadedTracks.some((uploadedTrackId) => uploadedTrackId.toString() === trackId.toString())) {
+        user.uploadedTracks.push(trackId);
+        await user.save();
+      }
+      return { uploadedTracks: user.uploadedTracks, action: 'added' };
+    } else {
+      user.uploadedTracks = user.uploadedTracks.filter(
+        (uploadedTrackId) => uploadedTrackId.toString() !== trackId.toString()
+      );
+      await user.save();
+      return { uploadedTracks: user.uploadedTracks, action: 'removed' };
+    }
   }
 
-  async followUser(currentUserId: string, targetUserId: string) {
+  async toggleUserFollows(currentUserId: string, targetUserId: string, follow: boolean = false) {
     if (currentUserId === targetUserId) {
-      throw new BadRequestException('You cannot follow yourself');
+      throw new BadRequestException('You cannot follow/unfollow yourself');
     }
 
     const currentUser = await this.userModel.findById(currentUserId).exec();
@@ -213,44 +202,29 @@ export class UsersService {
       throw new BadRequestException('User not found');
     }
 
-    if (currentUser.following.includes(targetUserId as any)) {
-      throw new BadRequestException('Already following this user');
+    const isFollowing = currentUser.following.includes(targetUserId as any);
+
+    if (follow) {
+      if (isFollowing) {
+        throw new BadRequestException('Already following this user');
+      }
+      currentUser.following.push(targetUserId as any);
+      targetUser.followers += 1;
+      await currentUser.save();
+      await targetUser.save();
+      return { following: currentUser.following, action: 'followed' };
+    } else {
+      if (!isFollowing) {
+        throw new BadRequestException('You are not following this user');
+      }
+      currentUser.following = currentUser.following.filter(
+        (id) => id.toString() !== targetUserId
+      );
+      targetUser.followers = Math.max(0, targetUser.followers - 1);
+      await currentUser.save();
+      await targetUser.save();
+      return { following: currentUser.following, action: 'unfollowed' };
     }
-
-    currentUser.following.push(targetUserId as any);
-    targetUser.followers += 1;
-
-    await currentUser.save();
-    await targetUser.save();
-
-    return currentUser.following;
-  }
-
-  async unfollowUser(currentUserId: string, targetUserId: string) {
-    if (currentUserId === targetUserId) {
-      throw new BadRequestException('You cannot unfollow yourself');
-    }
-
-    const currentUser = await this.userModel.findById(currentUserId).exec();
-    const targetUser = await this.userModel.findById(targetUserId).exec();
-
-    if (!currentUser || !targetUser) {
-      throw new BadRequestException('User not found');
-    }
-
-    if (!currentUser.following.includes(targetUserId as any)) {
-      throw new BadRequestException('You are not following this user');
-    }
-
-    currentUser.following = currentUser.following.filter(
-      (id) => id.toString() !== targetUserId
-    );
-    targetUser.followers = Math.max(0, targetUser.followers - 1);
-
-    await currentUser.save();
-    await targetUser.save();
-
-    return currentUser.following;
   }
 
   async banUser(id: string) {
