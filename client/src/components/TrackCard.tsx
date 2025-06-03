@@ -51,7 +51,7 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
     );
   }
 
-  return (
+    return (
     <div className="bg-[#1a1f25] rounded-lg overflow-hidden group hover:bg-[#1e242b] transition">
       <div className="relative aspect-square">
         <img
@@ -60,8 +60,19 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
           className="w-full h-full object-cover select-none pointer-events-none"
           draggable={false}
         />
+      </div>
+      <div className="p-4 flex gap-4">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-white truncate">{track.name}</h3>
+          <p className="text-sm text-zinc-400 truncate">{track.artistName}</p>
+          <div className="mt-2 flex items-center gap-2 text-zinc-400 text-sm">
+            <Heart size={16} />
+            <span>{track.likes}</span>
+          </div>
+        </div>
         <button
-          className={`absolute bottom-4 right-4 w-10 h-10 bg-[#ff5500] rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition`}
+          className={`w-10 h-10 bg-[#ff5500] rounded-full flex items-center justify-center transition hover:scale-105
+            ${(isCurrentTrack && isPlaying) ? 'opacity-100' : 'md:opacity-0 md:group-hover:opacity-100 opacity-100'}`}
           onClick={handlePlayClick}
         >
           {isCurrentTrack && isPlaying ? (
@@ -70,14 +81,6 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
             <Play className="text-white ml-[2px]" size={20} fill="white"/>
           )}
         </button>
-      </div>
-      <div className="p-4">
-        <h3 className="font-semibold text-white truncate">{track.name}</h3>
-        <p className="text-sm text-zinc-400 truncate">{track.artistName}</p>
-        <div className="mt-2 flex items-center gap-2 text-zinc-400 text-sm">
-          <Heart size={16} />
-          <span>{track.likes}</span>
-        </div>
       </div>
     </div>
   );

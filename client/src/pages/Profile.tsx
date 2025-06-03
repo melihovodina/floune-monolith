@@ -3,7 +3,7 @@ import { useAuth } from '../store/useAuth';
 import { getProfile, getUserByName, getTracksByIds, followUser, unfollowUser, updateProfile } from '../api/api';
 import { Track, User } from '../types';
 import TrackCard from '../components/TrackCard';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { UserPlus, UserMinus } from 'lucide-react';
 
 export default function Profile() {
@@ -19,6 +19,7 @@ export default function Profile() {
   const [isUpdating, setIsUpdating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [removeAvatar, setRemoveAvatar] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -143,7 +144,7 @@ export default function Profile() {
     );
   }
 
-return (
+  return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="bg-[#1a1f25] rounded-lg p-8 mb-8">
         <div className="flex flex-col md:flex-row items-center gap-8">
@@ -198,7 +199,7 @@ return (
                 </div>
                 <div className="flex gap-2 mt-3">
                   <button
-                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-2 sm:px-4 sm:py-2 rounded"
                     onClick={() => fileInputRef.current?.click()}
                     type="button"
                     disabled={isUpdating}
@@ -207,7 +208,7 @@ return (
                   </button>
                   {user.picture && !removeAvatar && (
                     <button
-                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                      className="bg-red-600 hover:bg-red-700 text-white px-2 py-2 sm:px-4 sm:py-2 rounded"
                       type="button"
                       disabled={isUpdating}
                       onClick={() => {
@@ -223,18 +224,29 @@ return (
             ) : (
               <>
                 <h1 className="text-3xl font-bold text-white mb-2">{user.name}</h1>
-                <p className="text-zinc-400 mb-1 sm:mb-2 capitalize">{user.role}</p>
+                <p className="text-zinc-400 capitalize">{user.role}</p>
                 <div className="flex flex-col md:flex-row gap-4 items-center">
                   <div className="text-zinc-400">
                     <span className="text-white">{user.followers}</span> followers
                   </div>
                   {currentUser && currentUser.name === user.name && (
-                    <button
-                      className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
-                      onClick={handleEditClick}
-                    >
-                      Change profile
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded"
+                        onClick={handleEditClick}
+                      >
+                        Change profile
+                      </button>
+                      <button
+                        className="bg-zinc-700 hover:bg-zinc-800 text-white px-4 py-2 rounded"
+                        onClick={() => {
+                          setAuth(null);
+                          navigate('/');
+                        }}
+                      >
+                        Logout
+                      </button>
+                    </div>
                   )}
                   {currentUser && currentUser.name !== user.name && (
                     <button
@@ -264,18 +276,28 @@ return (
         </div>
       </div>
       
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-6">Uploaded Tracks</h2>
-        {tracks.length > 0 ? (
-          <div className="grid grid-cols-1 gap-4">
-            {tracks.map((track, index) => (
-              <TrackCard key={index} track={track} queue={tracks} compact/>
-            ))}
-          </div>
-        ) : (
-          <p className="text-zinc-400 text-center">No tracks uploaded yet</p>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-2xl font-bold text-white">Uploaded Tracks</h2>
+        {currentUser && currentUser.name === user.name && (
+          <button
+            className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded flex items-center justify-center"
+            onClick={() => navigate('/upload')}
+            aria-label="Upload track"
+          >
+            <span className="block sm:hidden text-xl leading-none mb-1">+</span>
+            <span className="hidden sm:block">Upload track</span>
+          </button>
         )}
       </div>
+      {tracks.length > 0 ? (
+        <div className="grid grid-cols-1 gap-4">
+          {tracks.map((track, index) => (
+            <TrackCard key={index} track={track} queue={tracks} compact />
+          ))}
+        </div>
+      ) : (
+        <p className="text-zinc-400 text-center">No tracks uploaded yet</p>
+      )}
     </div>
   );
 }     

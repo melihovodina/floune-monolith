@@ -34,7 +34,7 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-900">
+    <div className="flex min-h-screen bg-[#0e1216]">
       <div className="w-full max-w-md mx-auto p-6 flex flex-col justify-center">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center">
@@ -62,7 +62,7 @@ const SignIn: React.FC = () => {
           </Link>
         </div>
 
-        <div className="bg-gray-800 rounded-lg shadow-xl p-8">
+        <div className="bg-[#1a1f25] rounded-lg shadow-xl p-8">
           <h1 className="text-white text-2xl font-bold mb-6">Sign in to your account</h1>
 
           {error && (
@@ -90,7 +90,7 @@ const SignIn: React.FC = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full bg-zinc-800 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="Enter your email"
                 required
               />
@@ -104,19 +104,19 @@ const SignIn: React.FC = () => {
                 >
                   Password
                 </label>
-                <Link
+                {/* <Link
                   to="/forgot-password"
                   className="text-sm text-orange-500 hover:text-orange-400"
                 >
                   Forgot password?
-                </Link>
+                </Link> */}
               </div>
               <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full bg-zinc-800 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 placeholder="Enter your password"
                 required
               />

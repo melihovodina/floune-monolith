@@ -40,43 +40,15 @@ const UploadTrack: React.FC = () => {
   };
   
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!selectedAudioFile) {
-      alert('Please select an audio file to upload');
-      return;
-    }
-    
-    // Simulate upload
-    setIsUploading(true);
-    
-    // Mock progress updates
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        const newProgress = prev + 10;
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          
-          // Simulate delay for processing
-          setTimeout(() => {
-            setIsUploading(false);
-            navigate('/');
-          }, 1000);
-          
-          return 100;
-        }
-        return newProgress;
-      });
-    }, 500);
+
   };
   
   return (
     <div className="max-w-3xl mx-auto py-6">
-      <div className="bg-gray-800 rounded-lg shadow-lg p-6">
+      <div className="bg-[#1a1f25] rounded-lg shadow-lg p-6">
         <h1 className="text-2xl font-bold text-white mb-6">Upload Track</h1>
         
         <form onSubmit={handleSubmit}>
-          {/* Audio File Upload */}
           <div className="mb-6">
             <label className="block text-gray-300 text-sm font-medium mb-2">
               Track File
