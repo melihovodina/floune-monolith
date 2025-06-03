@@ -12,6 +12,8 @@ import { useAuth } from './store/useAuth';
 import { useEffect } from 'react';
 import axios from 'axios';
 import UploadTrack from './pages/UploadTrack';
+import SignUp from './pages/SignUp';
+import Track from './pages/Track';
 
 function App() {
   const { setAuth } = useAuth();
@@ -44,16 +46,17 @@ function App() {
       });
   }, [setAuth]);
 
-  // ...existing code...
   return (
     <>
       <Router>
         <Routes>
           <Route path="/signin" element={<SignIn />} />
+          <Route path="/register" element={<SignUp />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="search" element={<Search />} />
             <Route path="library" element={<Library />} />
+            <Route path="track/:id" element={<Track />} />
             <Route path="profile" element={<Profile />} />
             <Route path="profile/:name" element={<Profile />} />
             <Route path="upload" element={<UploadTrack />} />
@@ -65,7 +68,6 @@ function App() {
       </Router>
     </>
   );
-// ...existing code...
 }
 
 export default App;
