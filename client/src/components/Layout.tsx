@@ -1,9 +1,9 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import Player from './Player';
 import Header from './Header';
 import { useState } from 'react';
 import { Menu } from 'lucide-react';
+import Player from './Player';
 
 const Layout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);

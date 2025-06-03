@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, X, Music } from 'lucide-react';
+import { createTrack } from '../api/api';
 
 const UploadTrack: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -9,7 +10,6 @@ const UploadTrack: React.FC = () => {
   const [selectedCoverArt, setSelectedCoverArt] = useState<File | null>(null);
   const [coverArtPreview, setCoverArtPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const navigate = useNavigate();
   
   const handleAudioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,8 +39,29 @@ const UploadTrack: React.FC = () => {
     setCoverArtPreview(null);
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedAudioFile || !title.trim()) return;
 
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('name', title);
+      formData.append('description', description);
+      formData.append('audio', selectedAudioFile);
+      if (selectedCoverArt) {
+        formData.append('picture', selectedCoverArt);
+      }
+
+      await createTrack(formData);
+
+      setIsUploading(false);
+      navigate('/profile');
+    } catch (error) {
+      setIsUploading(false);
+      alert('Failed to upload track');
+    }
   };
   
   return (
@@ -61,7 +82,7 @@ const UploadTrack: React.FC = () => {
                   <div className="flex items-center">
                     <Music size={24} className="text-green-500 mr-3" />
                     <div className="text-left">
-                      <p className="text-white font-medium truncate">{selectedAudioFile.name}</p>
+                      <p className="text-white font-medium truncate max-w-[160px] sm:max-w-none ">{selectedAudioFile.name}</p>
                       <p className="text-gray-400 text-sm">
                         {(selectedAudioFile.size / (1024 * 1024)).toFixed(2)} MB
                       </p>
@@ -103,7 +124,7 @@ const UploadTrack: React.FC = () => {
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 Cover Art
               </label>
-              <div className={`border-2 border-dashed rounded-lg ${
+              <div className={`w-[300px] h-[300px] border-2 border-dashed rounded-lg ${
                 selectedCoverArt ? 'border-green-500' : 'border-gray-600 hover:border-orange-500'
               } transition flex flex-col items-center justify-center h-48 overflow-hidden`}>
                 {coverArtPreview ? (
@@ -153,7 +174,7 @@ const UploadTrack: React.FC = () => {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full bg-zinc-800 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                   placeholder="Enter track title"
                   required
                 />
@@ -167,42 +188,35 @@ const UploadTrack: React.FC = () => {
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none h-24"
+                  className="w-full bg-zinc-800 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent resize-none h-24 sm:h-52"
                   placeholder="Describe your track (optional)"
                 />
               </div>
             </div>
           </div>
           
-          {isUploading && (
-            <div className="mt-6">
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-sm text-gray-300">Uploading... {uploadProgress}%</span>
+          <div className="mt-6 flex items-center justify-end relative">
+            {isUploading && (
+              <div className="absolute left-0">
+                <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
               </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div 
-                  className="bg-orange-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
+            )}
+            <div className="flex ml-auto">
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="mr-4 px-6 py-2 border border-gray-600 text-gray-300 rounded-md hover:bg-gray-700 transition"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={!selectedAudioFile || isUploading}
+                className="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUploading ? 'Uploading...' : 'Upload Track'}
+              </button>
             </div>
-          )}
-          
-          <div className="mt-6 flex justify-end">
-            <button
-              type="button"
-              onClick={() => navigate('/')}
-              className="mr-4 px-6 py-2 border border-gray-600 text-gray-300 rounded-md hover:bg-gray-700 transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={!selectedAudioFile || isUploading}
-              className="px-6 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isUploading ? 'Uploading...' : 'Upload Track'}
-            </button>
           </div>
         </form>
       </div>

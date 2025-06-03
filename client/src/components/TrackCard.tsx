@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, Heart } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import { Track } from '../types';
 import { usePlayer } from '../store/usePlayer';
 
@@ -65,10 +65,6 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-white truncate">{track.name}</h3>
           <p className="text-sm text-zinc-400 truncate">{track.artistName}</p>
-          <div className="mt-2 flex items-center gap-2 text-zinc-400 text-sm">
-            <Heart size={16} />
-            <span>{track.likes}</span>
-          </div>
         </div>
         <button
           className={`w-10 h-10 bg-[#ff5500] rounded-full flex items-center justify-center transition hover:scale-105

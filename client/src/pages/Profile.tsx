@@ -149,7 +149,7 @@ export default function Profile() {
       <div className="bg-[#1a1f25] rounded-lg p-8 mb-8">
         <div className="flex flex-col md:flex-row items-center gap-8">
           <div className="flex flex-col items-center">
-            <div className="w-48 h-48 rounded-full overflow-hidden border-4 border-orange-500 relative">
+            <div className="w-48 h-48 rounded-full overflow-hidden relative">
               <img
                 src={
                   newAvatar
@@ -278,16 +278,6 @@ export default function Profile() {
       
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-white">Uploaded Tracks</h2>
-        {currentUser && currentUser.name === user.name && (
-          <button
-            className="bg-orange-500 hover:bg-orange-600 text-white px-2 py-1 sm:px-4 sm:py-2 rounded flex items-center justify-center"
-            onClick={() => navigate('/upload')}
-            aria-label="Upload track"
-          >
-            <span className="block sm:hidden text-xl leading-none mb-1">+</span>
-            <span className="hidden sm:block">Upload track</span>
-          </button>
-        )}
       </div>
       {tracks.length > 0 ? (
         <div className="grid grid-cols-1 gap-4">

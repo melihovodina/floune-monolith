@@ -44,24 +44,28 @@ function App() {
       });
   }, [setAuth]);
 
+  // ...existing code...
   return (
-    <Router>
-      <Routes>
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="search" element={<Search />} />
-          <Route path="library" element={<Library />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="profile/:name" element={<Profile />} />
-          <Route path="upload" element={<UploadTrack />} />
-          <Route path="concerts" element={<Concerts />} />
-          <Route path="concerts/:id" element={<ConcertDetails />} />
-          <Route path="orders" element={<Orders />} />
-        </Route>
-      </Routes>
-    </Router>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="search" element={<Search />} />
+            <Route path="library" element={<Library />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="profile/:name" element={<Profile />} />
+            <Route path="upload" element={<UploadTrack />} />
+            <Route path="concerts" element={<Concerts />} />
+            <Route path="concerts/:id" element={<ConcertDetails />} />
+            <Route path="orders" element={<Orders />} />
+          </Route>
+        </Routes>
+      </Router>
+    </>
   );
+// ...existing code...
 }
 
 export default App;

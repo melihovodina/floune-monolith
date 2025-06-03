@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { getAllTracks, getAllUsers } from '../api/api';
 import { Track, User } from '../types';
 import TrackCard from '../components/TrackCard';
@@ -49,12 +50,12 @@ export default function Home() {
     );
   }
 
-  return (
+return (
     <div className="space-y-8">
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl sm:text-2xl font-bold text-white">Trending Tracks</h2>
-          <a href="#" className="text-[#ff5500] hover:underline text-sm sm:text-base">See All</a>
+          <Link to="#" className="text-[#ff5500] hover:underline text-sm sm:text-base">See All</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {trendingTracks.map((track, index) => (
@@ -66,7 +67,7 @@ export default function Home() {
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl sm:text-2xl font-bold text-white">New Releases</h2>
-          <a href="#" className="text-[#ff5500] hover:underline text-sm sm:text-base">See All</a>
+          <Link to="#" className="text-[#ff5500] hover:underline text-sm sm:text-base">See All</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {newReleases.map((track, index) => (
@@ -76,31 +77,31 @@ export default function Home() {
       </section>
 
       <section className="mb-10">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-white">Popular Artists</h2>
-        <a href="/artists" className="text-orange-500 hover:text-orange-400 text-sm font-medium">
-          See All
-        </a>
-      </div>
-      <div className="flex overflow-x-auto space-x-4 scrollbar-hide">
-        {artists.map((artist, index) => (
-          <div key={index} className="flex-shrink-0">
-            <a href={`/profile/${artist.name}`} className="block group">
-              <div className="w-40 h-40 rounded-full overflow-hidden mb-2 border-2 border-transparent group-hover:border-orange-500 transition">
-                <img
-                  src={artist.picture ? `http://localhost:5000/${artist.picture}` : '/blank.webp'}
-                  alt={artist.name}
-                  className="w-full h-full object-cover select-none pointer-events-none"
-                  draggable={false}
-                />
-              </div>
-              <h3 className="text-white text-center font-medium text-sm truncate">{artist.name}</h3>
-              <p className="text-gray-400 text-center text-xs">{artist.followers} Followers</p>
-            </a>
-          </div>
-        ))}
-      </div>
-    </section>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-white">Popular Artists</h2>
+          <Link to="/artists" className="text-orange-500 hover:text-orange-400 text-sm font-medium">
+            See All
+          </Link>
+        </div>
+        <div className="flex overflow-x-auto space-x-4 scrollbar-hide">
+          {artists.map((artist, index) => (
+            <div key={index} className="flex-shrink-0">
+              <Link to={`/profile/${artist.name}`} className="block group">
+                <div className="w-40 h-40 rounded-full overflow-hidden mb-2 border-2 border-transparent group-hover:border-orange-500 transition">
+                  <img
+                    src={artist.picture ? `http://localhost:5000/${artist.picture}` : '/blank.webp'}
+                    alt={artist.name}
+                    className="w-full h-full object-cover select-none pointer-events-none"
+                    draggable={false}
+                  />
+                </div>
+                <h3 className="text-white text-center font-medium text-sm truncate">{artist.name}</h3>
+                <p className="text-gray-400 text-center text-xs">{artist.followers} Followers</p>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }
