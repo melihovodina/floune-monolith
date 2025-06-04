@@ -41,6 +41,12 @@ export const getProfile = async () => {
   return axiosInstance.get('/users/profile');
 };
 
+export const searchUsers = async (query: string) => {
+  return axiosInstance.get('/users/search', {
+    params: { query },
+  });
+};
+
 export const updateProfile = async (data: FormData) => {
   return axiosInstance.patch('/users/profile', data, {
     headers: { 'Content-Type': 'multipart/form-data' },

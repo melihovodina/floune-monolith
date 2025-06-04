@@ -91,6 +91,13 @@ export class UsersService {
     return user;
   }
 
+  async search(query: string) {
+    const users = await this.userModel.find({
+      name: { $regex: new RegExp(query, 'i') }
+    }).select('_id name picture followers role');
+    return users;
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto, picture?, full: boolean = false) {
     const user = await this.userModel.findById(id).exec();
     if (!user) {

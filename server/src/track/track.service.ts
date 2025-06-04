@@ -90,8 +90,11 @@ export class TrackService {
 
   async search(query: string): Promise<Track[]> {
     const tracks = await this.trackModel.find({
-      name: {$regex: new RegExp(query, 'i')}
-    })
+      $or: [
+        { name: { $regex: new RegExp(query, 'i') } },
+        { artistName: { $regex: new RegExp(query, 'i') } }
+      ]
+    });
     return tracks;
   }
 

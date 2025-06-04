@@ -33,6 +33,11 @@ export class UsersController {
     return this.usersService.findOne('id', id);
   }
 
+  @Get('/search')
+  search(@Query('query') query: string) {
+    return this.usersService.search(query);
+  }
+
   @Get('/profile')
   @UseGuards(AuthGuard)
   getProfile(@Req() req, @Query('full') full: string) {
