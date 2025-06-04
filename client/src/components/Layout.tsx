@@ -21,7 +21,7 @@ const Layout = () => {
               <Menu size={24} />
             </button>
           </Header>
-          <div className="px-4 sm:px-6 py-4 sm:mb-[80px] mb-[140px]">
+          <div className="px-2 sm:px-6 py-4 sm:mb-[80px] mb-[140px]">
             <Outlet />
           </div>
         </main>

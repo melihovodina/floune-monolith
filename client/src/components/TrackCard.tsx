@@ -49,7 +49,7 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
 
   if (compact) {
     return (
-      <div className="flex items-center p-2 sm:hover:bg-gray-800 rounded transition group">
+      <div className="flex items-center p-2 rounded transition group">
         <div className="relative w-20 h-20 sm:w-30 sm:h-30 flex-shrink-0">
           {track.picture ? (
             <img 
@@ -61,7 +61,7 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
             <div className="w-full h-full bg-gray-700 rounded" />
           )}
           <button 
-            className={`absolute inset-0 flex items-center justify-center ${isCurrentTrack && isPlaying ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition bg-black/30 rounded`}
+            className={`absolute inset-0 flex items-center justify-center ${isCurrentTrack && isPlaying ? 'opacity-100' : 'opacity-0 sm:group-hover:opacity-100'} transition bg-black/30 rounded`}
             onClick={() => handlePlayClick()}
           >
             <Play size={16} fill="white" className={isCurrentTrack && isPlaying ? "hidden" : ""} />
@@ -73,8 +73,9 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
           <p className="text-xs text-gray-400 truncate">{track.artistName}</p>
         </div>
         <button
-          className="ml-2"
-          onClick={handleToggleFavorite}
+          className="p-2 text-zinc-400 hover:text-white transition rounded-full hover:bg-zinc-700"
+          title="Add to favorites"  
+          onClick={handleToggleFavorite}  
           aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
         >
           <Heart

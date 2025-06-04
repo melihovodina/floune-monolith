@@ -18,9 +18,9 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
   return (
     <div className={`
-      fixed inset-y-0 left-0 w-64 bg-[#1a1f25] p-4 transform transition-transform duration-300 ease-in-out
+      fixed inset-y-0 z-50 left-0 w-64 bg-[#1a1f25] p-4 transform transition-transform duration-300 ease-in-out
       lg:relative lg:translate-x-0
-      ${isOpen ? 'translate-x-0 z-50' : '-translate-x-full'}
+      ${isOpen ? 'translate-x-0' : '-translate-x-full'}
     `}>
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center">

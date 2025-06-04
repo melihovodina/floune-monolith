@@ -82,7 +82,7 @@ const Player = () => {
   if (!currentTrack) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-[#1a1f25] border-t border-zinc-800 px-4 py-3">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#1a1f25] border-t border-zinc-800 px-4 py-3 z-50">
       <div className="flex flex-col sm:flex-row items-center justify-between w-full gap-4">
         <div className="flex gap-4 w-full sm:w-auto sm:max-w-[25%] items-center">
           <img
