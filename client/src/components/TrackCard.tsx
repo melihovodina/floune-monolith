@@ -3,6 +3,7 @@ import { Play, Pause } from 'lucide-react';
 import { Track } from '../types';
 import { usePlayer } from '../store/usePlayer';
 import { Link } from 'react-router-dom';
+import { listenTrack } from '../api/api';
 
 interface TrackCardProps {
   track: Track;
@@ -15,11 +16,12 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
 
   const isCurrentTrack = currentTrack?._id === track._id;
 
-  const handlePlayClick = () => {
+  const handlePlayClick = async () => {
     if (isCurrentTrack) {
       setIsPlaying(!isPlaying);
     } else {
       setQueueAndTrack(queue, track);
+      await listenTrack(track._id);
     }
   };
 

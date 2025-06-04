@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Play, Pause, Heart, Share2, Music } from 'lucide-react';
-import { getTrackById, getUserById } from '../api/api';
+import { getTrackById, getUserById, listenTrack } from '../api/api';
 import { usePlayer } from '../store/usePlayer';
 import { FastAverageColor } from 'fast-average-color';
 import Notification from '../components/Notification';
@@ -52,12 +52,13 @@ const Track: React.FC = () => {
       });
   }, [id]);
 
-  const handlePlayPause = () => {
+  const handlePlayPause = async () => {
     if (!track) return;
     if (isCurrentTrack) {
       setIsPlaying(!isPlaying);
     } else {
       setPlayerTrack(track);
+      await listenTrack(track._id);
     }
   };
 

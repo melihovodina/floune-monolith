@@ -54,8 +54,8 @@ const Player = () => {
   };
 
   const handleSeek = (value: number[]) => {
-    if (audioRef.current) {
-      const newTime = (value[0] / 100) * audioRef.current.duration;
+    if (audioRef.current && trackDuration) {
+      const newTime = (value[0] / 100) * trackDuration;
       audioRef.current.currentTime = newTime;
       setProgress(value[0]);
     }
