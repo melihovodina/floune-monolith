@@ -81,7 +81,7 @@ export default function Library() {
 
   return (
     <Tabs.Root defaultValue="favorites" className="space-y-6">
-      <Tabs.List className="flex gap-4 border-b border-zinc-800">
+      <Tabs.List className="flex gap-4 border-b border-zinc-800 justify-center sm:justify-start">
         <Tabs.Trigger
           value="favorites"
           className="px-4 py-2 text-zinc-400 data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-orange-500"

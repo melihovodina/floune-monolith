@@ -23,7 +23,6 @@ const UploadTrack: React.FC = () => {
       const file = e.target.files[0];
       setSelectedCoverArt(file);
       
-      // Create a preview
       const reader = new FileReader();
       reader.onload = (e) => {
         if (e.target && typeof e.target.result === 'string') {
