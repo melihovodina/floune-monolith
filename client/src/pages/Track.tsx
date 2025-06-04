@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Play, Pause, Heart, Share2, Clock, Music } from 'lucide-react';
+import { Play, Pause, Heart, Share2, Music } from 'lucide-react';
 import { getTrackById } from '../api/api';
 import { usePlayer } from '../store/usePlayer';
+import { FastAverageColor } from 'fast-average-color';
 
 const Track: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [track, setTrack] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [bgGradient, setBgGradient] = useState<string>('linear-gradient(to bottom, #2d3748, #1a202c)');
+  const imgRef = useRef<HTMLImageElement>(null);
   const {
     currentTrack,
     isPlaying,
@@ -29,6 +32,19 @@ const Track: React.FC = () => {
       .catch(() => setIsLoading(false));
   }, [id]);
 
+  useEffect(() => {
+    if (track?.picture && imgRef.current) {
+      const fac = new FastAverageColor();
+      fac.getColorAsync(imgRef.current)
+        .then((color: { hex: string }) => {
+          setBgGradient(`linear-gradient(to bottom, ${color.hex}, #1a202c)`);
+        })
+        .catch(() => {
+          setBgGradient('linear-gradient(to bottom, #2d3748, #1a202c)');
+        });
+    }
+  }, [track?.picture]);
+
   const handlePlayPause = () => {
     if (!track) return;
     if (isCurrentTrack) {
@@ -45,12 +61,6 @@ const Track: React.FC = () => {
       month: 'short',
       day: 'numeric'
     });
-  };
-
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
   const formatNumber = (num: number): string => {
@@ -71,16 +81,21 @@ const Track: React.FC = () => {
     );
   }
 
-  return (
+ return (
     <div className="max-w-6xl mx-auto pb-8">
-      <div className="bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg overflow-hidden shadow-lg mb-8">
+      <div
+        className="rounded-lg overflow-hidden shadow-lg mb-8"
+        style={{ background: bgGradient }}
+      >
         <div className="p-6 md:p-8">
           <div className="flex flex-col md:flex-row gap-6">
             {/* Track Cover & Info */}
             <div className="md:w-1/3">
               {track.picture ? (
-                <img 
-                  src={`http://localhost:5000/${track.picture}`} 
+                <img
+                  ref={imgRef}
+                  crossOrigin="anonymous"
+                  src={`http://localhost:5000/${track.picture}`}
                   alt={track.name}
                   className="w-full aspect-square object-cover rounded-lg shadow-md"
                 />
