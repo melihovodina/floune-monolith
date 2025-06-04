@@ -57,7 +57,7 @@ const UploadTrack: React.FC = () => {
       await createTrack(formData);
 
       setIsUploading(false);
-      navigate('/profile');
+      navigate('/library');
     } catch (error) {
       setIsUploading(false);
       alert('Failed to upload track');
@@ -119,7 +119,6 @@ const UploadTrack: React.FC = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Cover Art Upload */}
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 Cover Art
@@ -163,7 +162,6 @@ const UploadTrack: React.FC = () => {
               </div>
             </div>
             
-            {/* Track Info */}
             <div className="space-y-4">
               <div>
                 <label htmlFor="title" className="block text-gray-300 text-sm font-medium mb-2">
