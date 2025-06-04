@@ -35,7 +35,7 @@ export class AuthService {
       return user
     }
     
-    throw new UnauthorizedException({meassage: "Wrong email or password"})
+    throw new UnauthorizedException({message: "Wrong email or password"})
   }
 
   async registration(userDto: registrationDto) {

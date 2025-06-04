@@ -67,7 +67,7 @@ const SignUp: React.FC = () => {
           <h1 className="text-white text-2xl font-bold mb-6">Create your account</h1>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-2 rounded mb-4">
+            <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-2 py-2 rounded mb-4">
               {error}
               <button
                 className="float-right text-red-500/80 hover:text-red-500"

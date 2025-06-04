@@ -27,7 +27,7 @@ const SignIn: React.FC = () => {
 
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to login');
+      setError(err.response?.data?.message);
     } finally {
       setIsLoading(false);
     }
@@ -66,11 +66,12 @@ const SignIn: React.FC = () => {
           <h1 className="text-white text-2xl font-bold mb-6">Sign in to your account</h1>
 
           {error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-500 px-4 py-2 rounded mb-4">
-              {error}
+            <div className="bg-red-500/10 border border-red-500/50 text-red-500 py-2 rounded mb-4 flex justify-center items-center relative">
+              <span className="mx-auto">{error}</span>
               <button
-                className="float-right text-red-500/80 hover:text-red-500"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-red-500/80 hover:text-red-500"
                 onClick={() => setError(null)}
+                type="button"
               >
                 &times;
               </button>

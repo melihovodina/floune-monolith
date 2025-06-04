@@ -15,25 +15,22 @@ export class UsersController {
 
 // users requests
   @Get()
-  @UseGuards(AuthGuard)
   getAll(
-    @Req() req,
     @Query('count') count: number,
     @Query('offset') offset: number,
-    @Query('sortBy') sortBy: UsersSortBy = 'createdAt',
-    @Query('full') full: string
+    @Query('sortBy') sortBy: UsersSortBy = 'createdAt'
   ) {
-    const isAdmin = req.user?.role === 'admin';
-    const needFull = isAdmin && full === 'true';
-    return this.usersService.getAll(count, offset, sortBy, needFull);
+    return this.usersService.getAll(count, offset, sortBy);
   }
 
   @Get('/name/:name')
-  @UseGuards(AuthGuard)
-  findByName(@Req() req, @Param('name') name: string, @Query('full') full: string) {
-    const isAdmin = req.user?.role === 'admin';
-    const needFull = isAdmin && full === 'true';
-    return this.usersService.findOne('name', name, needFull);
+  findByName(@Param('name') name: string) {
+    return this.usersService.findOne('name', name);
+  }
+
+  @Get('/id/:id')
+  findById(@Param('id') id: string) {
+    return this.usersService.findOne('id', id);
   }
 
   @Get('/profile')

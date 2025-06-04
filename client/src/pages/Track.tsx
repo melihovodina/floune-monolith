@@ -1,22 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Play, Pause, Heart, Share2, Music } from 'lucide-react';
-import { getTrackById } from '../api/api';
+import { getTrackById, getUserById } from '../api/api';
 import { usePlayer } from '../store/usePlayer';
 import { FastAverageColor } from 'fast-average-color';
+import Notification from '../components/Notification';
+import FollowButton from '../components/FollowButton';
 
 const Track: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [track, setTrack] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [artist, setArtist] = useState<any>(null);
+  const [isArtistLoading, setIsArtistLoading] = useState(true);
   const [bgGradient, setBgGradient] = useState<string>('linear-gradient(to bottom, #2d3748, #1a202c)');
   const imgRef = useRef<HTMLImageElement>(null);
+  const [showCopied, setShowCopied] = useState(false);
+  const fac = new FastAverageColor();
   const {
     currentTrack,
     isPlaying,
     setTrack: setPlayerTrack,
     setIsPlaying,
-    setQueueAndTrack,
   } = usePlayer();
 
   const isCurrentTrack = currentTrack?._id === id;
@@ -24,26 +29,28 @@ const Track: React.FC = () => {
   useEffect(() => {
     if (!id) return;
     setIsLoading(true);
+    setIsArtistLoading(true);
     getTrackById(id)
       .then(res => {
         setTrack(res.data);
         setIsLoading(false);
-      })
-      .catch(() => setIsLoading(false));
-  }, [id]);
 
-  useEffect(() => {
-    if (track?.picture && imgRef.current) {
-      const fac = new FastAverageColor();
-      fac.getColorAsync(imgRef.current)
-        .then((color: { hex: string }) => {
-          setBgGradient(`linear-gradient(to bottom, ${color.hex}, #1a202c)`);
-        })
-        .catch(() => {
-          setBgGradient('linear-gradient(to bottom, #2d3748, #1a202c)');
-        });
-    }
-  }, [track?.picture]);
+        if (res.data.artistId) {
+          getUserById(res.data.artistId)
+            .then(artistRes => {
+              setArtist(artistRes.data);
+              setIsArtistLoading(false);
+            })
+            .catch(() => setIsArtistLoading(false));
+        } else {
+          setIsArtistLoading(false);
+        }
+      })
+      .catch(() => {
+        setIsLoading(false);
+        setIsArtistLoading(false);
+      });
+  }, [id]);
 
   const handlePlayPause = () => {
     if (!track) return;
@@ -53,6 +60,36 @@ const Track: React.FC = () => {
       setPlayerTrack(track);
     }
   };
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setShowCopied(true);
+      setTimeout(() => setShowCopied(false), 2000);
+    });
+  }
+
+  const handleImgLoad = () => {
+    if (imgRef.current) {
+      fac.getColorAsync(imgRef.current)
+        .then((color: { hex: string }) => {
+          const from = darkenHex(color.hex, 0.6);
+          setBgGradient(`linear-gradient(to bottom, ${from}, #1a202c)`);
+        })
+        .catch(() => {
+          setBgGradient('linear-gradient(to bottom, #2d3748, #1a202c)');
+        });
+    }
+  };
+
+  const darkenHex = (hex: string, factor: number): string => {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
+    const num = parseInt(hex, 16);
+    let r = Math.floor(((num >> 16) & 0xff) * factor);
+    let g = Math.floor(((num >> 8) & 0xff) * factor);
+    let b = Math.floor((num & 0xff) * factor);
+    return `rgb(${r},${g},${b})`;
+  }
 
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
@@ -73,6 +110,11 @@ const Track: React.FC = () => {
     return num?.toString() ?? '';
   };
 
+  // Для обновления количества подписчиков артиста после follow/unfollow
+  const setArtistFollowers = (n: number) => {
+    if (artist) setArtist({ ...artist, followers: n });
+  };
+
   if (isLoading || !track) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -81,15 +123,15 @@ const Track: React.FC = () => {
     );
   }
 
- return (
+  return (
     <div className="max-w-6xl mx-auto pb-8">
+      {showCopied && <Notification message="Track link copied"/>}
       <div
         className="rounded-lg overflow-hidden shadow-lg mb-8"
         style={{ background: bgGradient }}
       >
         <div className="p-6 md:p-8">
           <div className="flex flex-col md:flex-row gap-6">
-            {/* Track Cover & Info */}
             <div className="md:w-1/3">
               {track.picture ? (
                 <img
@@ -98,13 +140,14 @@ const Track: React.FC = () => {
                   src={`http://localhost:5000/${track.picture}`}
                   alt={track.name}
                   className="w-full aspect-square object-cover rounded-lg shadow-md"
+                  onLoad={handleImgLoad}
                 />
               ) : (
                 <div className="w-full aspect-square bg-gray-700 rounded-lg flex items-center justify-center">
                   <span className="text-gray-500 text-lg">{track.name}</span>
                 </div>
               )}
-              
+
               <div className="mt-4 space-y-3">
                 <div className="flex items-center space-x-4">
                   <div className="text-gray-400 flex items-center">
@@ -115,62 +158,71 @@ const Track: React.FC = () => {
                     <Heart size={20} />
                     <span className="ml-1 text-sm">{formatNumber(track.likes)}</span>
                   </div>
-                  <button className="text-gray-400 hover:text-white transition group flex items-center">
+                  <button
+                    className="text-gray-400 hover:text-white transition group flex items-center"
+                    onClick={handleShare}
+                    type="button"
+                  >
                     <Share2 size={20} />
                   </button>
                   <span className="text-sm text-gray-400 mx-1">•</span>
                   <span className="text-sm text-gray-400">{formatDate(track.createdAt)}</span>
                 </div>
-                
+
                 <div className="pt-3 border-t border-gray-700">
                   <h3 className="text-gray-400 text-sm font-medium mb-2">Artist</h3>
                   <div className="flex items-center">
-                    {track.artistPicture ? (
-                      <img 
-                        src={`http://localhost:5000/${track.artistPicture}`} 
-                        alt={track.artistName}
+                    {isArtistLoading ? (
+                      <div className="w-10 h-10 bg-gray-700 rounded-full mr-3 animate-pulse" />
+                    ) : artist && artist.picture ? (
+                      <img
+                        src={`http://localhost:5000/${artist.picture}`}
+                        alt={artist.name}
                         className="w-10 h-10 rounded-full object-cover mr-3"
                       />
                     ) : (
                       <div className="w-10 h-10 bg-gray-700 rounded-full mr-3" />
                     )}
                     <div>
-                      <p className="text-white font-medium">{track.artistName}</p>
-                      <p className="text-sm text-gray-400">{formatNumber(track.artistFollowers || 0)} followers</p>
+                      <Link
+                        to={artist ? `/profile/${artist.name}` : "#"}
+                        className={`text-white font-medium hover:underline ${!artist ? "pointer-events-none opacity-60" : ""}`}
+                      >
+                        {artist ? artist.name : track.artistName}
+                      </Link>
+                      <p className="text-sm text-gray-400">{artist ? formatNumber(artist.followers || 0) : '—'} followers</p>
                     </div>
-                    <button className="ml-auto bg-transparent hover:bg-gray-700 text-gray-300 text-sm border border-gray-600 rounded-full px-4 py-1 transition">
-                      Follow
-                    </button>
+                    {artist && (
+                      <FollowButton
+                        targetUserId={artist._id}
+                        followers={artist.followers || 0}
+                        setFollowers={setArtistFollowers}
+                        size="small"
+                        className="ml-auto"
+                      />
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-            
-            {/* Waveform & Description */}
+
             <div className="md:w-2/3">
               <div className="flex items-center mb-4">
-                <button 
+                <button
                   className="w-12 h-12 flex items-center justify-center bg-[#ff5500] rounded-full hover:bg-orange-600 text-white rounded-full mr-4 transition"
                   onClick={handlePlayPause}
                 >
                   {isCurrentTrack && isPlaying ? <Pause size={24} fill="white"/> : <Play size={24} className='ml-[2px]' fill="white"/>}
                 </button>
-                
+
                 <div>
-                  <h1 className="text-2xl font-bold text-white">{track.name}</h1>
-                  <p className="text-gray-400">{track.artistName}</p>
+                  <h1 className="text-4xl font-bold text-white">{track.name}</h1>
                 </div>
               </div>
-              
-              <div className="mb-6">
-                {/* Здесь может быть компонент WaveformDisplay, если он есть */}
+
+              <div className="mb-8 p-2">
+                <p className="text-white">{track.text}</p>
               </div>
-              
-              {track.description && (
-                <div className="mb-8 p-4 bg-gray-800 rounded-lg">
-                  <p className="text-gray-300">{track.description}</p>
-                </div>
-              )}
             </div>
           </div>
         </div>

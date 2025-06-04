@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '../store/useAuth';
-import { getProfile, getUserByName, getTracksByIds, followUser, unfollowUser, updateProfile } from '../api/api';
+import { getProfile, getUserByName, getTracksByIds, updateProfile } from '../api/api';
 import { Track, User } from '../types';
 import TrackCard from '../components/TrackCard';
 import { useNavigate, useParams } from 'react-router-dom';
-import { UserPlus, UserMinus } from 'lucide-react';
+import FollowButton from '../components/FollowButton';
 
 export default function Profile() {
   const [user, setUser] = useState<User | null>(null);
@@ -12,7 +12,6 @@ export default function Profile() {
   const [isLoading, setIsLoading] = useState(true);
   const { user: currentUser, setAuth } = useAuth();
   const { name } = useParams();
-  const [isProcessing, setIsProcessing] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [newName, setNewName] = useState('');
   const [newAvatar, setNewAvatar] = useState<File | null>(null);
@@ -51,44 +50,7 @@ export default function Profile() {
     fetchData();
   }, [name]);
 
-  const isFollowing = currentUser && user
-    ? currentUser.following.includes(user._id)
-    : false;
-
-  const handleFollowToggle = async () => {
-    if (!currentUser || !user) return;
-    setIsProcessing(true);
-    try {
-      if (isFollowing) {
-        const res = await unfollowUser(user._id);
-        setAuth({
-          ...currentUser,
-          following: res.data,
-        });
-        setUser({
-          ...user,
-          followers: Math.max(0, user.followers - 1),
-        });
-      } else {
-        const res = await followUser(user._id);
-        setAuth({
-          ...currentUser,
-          following: res.data,
-        });
-        setUser({
-          ...user,
-          followers: user.followers + 1,  
-        });
-      }
-    } catch (error) {
-      console.error('Error while following to user:', error);
-      setIsProcessing(false);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-    const handleEditClick = () => {
+  const handleEditClick = () => {
     setEditMode(true);
     setNewName(user?.name || '');
   };
@@ -249,25 +211,12 @@ export default function Profile() {
                     </div>
                   )}
                   {currentUser && currentUser.name !== user.name && (
-                    <button
-                      className={`px-6 py-2 rounded-full flex items-center gap-2 transition ${
-                        isFollowing
-                          ? 'bg-zinc-700 hover:bg-zinc-800 text-white'
-                          : 'bg-orange-500 hover:bg-orange-600 text-white'
-                      }`}
-                      onClick={handleFollowToggle}
-                      disabled={isProcessing}
-                    >
-                      {isFollowing ? (
-                        <>
-                          <UserMinus size={20} /> Unfollow
-                        </>
-                      ) : (
-                        <>
-                          <UserPlus size={20} /> Follow
-                        </>
-                      )}
-                    </button>
+                    <FollowButton
+                      targetUserId={user._id}
+                      followers={user.followers}
+                      setFollowers={n => setUser({ ...user, followers: n })}
+                      size="large"
+                    />
                   )}
                 </div>
               </>
@@ -290,4 +239,4 @@ export default function Profile() {
       )}
     </div>
   );
-}     
+}

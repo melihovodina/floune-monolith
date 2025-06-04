@@ -33,6 +33,10 @@ export const getUserByName = async (name: string) => {
   return axiosInstance.get(`/users/name/${name}`);
 };
 
+export const getUserById = async (id: string) => {
+  return axiosInstance.get(`/users/id/${id}`);
+};
+
 export const getProfile = async () => {
   return axiosInstance.get('/users/profile');
 };

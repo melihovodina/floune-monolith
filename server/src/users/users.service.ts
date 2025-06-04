@@ -62,7 +62,7 @@ export class UsersService {
       .limit(Number(count));
 
     if (!full) {
-      usersQuery.select('name picture followers role');
+      usersQuery.select('_id name picture followers role');
     }
 
     const users = await usersQuery.lean();
@@ -80,7 +80,7 @@ export class UsersService {
 
     let userQuery = this.userModel.findOne(query);
     if (!full) {
-      userQuery.select('name picture followers role uploadedTracks');
+      userQuery.select('_id name picture followers role uploadedTracks');
     }
 
     const user = await userQuery.lean();
@@ -147,8 +147,8 @@ export class UsersService {
     }
 
     if (!full) {
-      const { name, picture, followers, role, uploadedTracks } = updatedUser;
-      return { name, picture, followers, role, uploadedTracks };
+      const { _id, name, picture, followers, role, uploadedTracks } = updatedUser;
+      return { _id, name, picture, followers, role, uploadedTracks };
     }
 
     return updatedUser;
