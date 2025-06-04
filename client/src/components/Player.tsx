@@ -21,7 +21,8 @@ const Player = () => {
   } = usePlayer();
 
   const isFavorite = !!currentTrack && !!user?.likedTracks?.includes(currentTrack._id);
-
+  const trackDuration = currentTrack?.duration || 0;
+  
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -36,11 +37,11 @@ const Player = () => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
-  }, [volume]);
+  }, [audioRef, currentTrack]);
 
   const handleTimeUpdate = () => {
-    if (audioRef.current && audioRef.current.duration) {
-      const progress = (audioRef.current.currentTime / audioRef.current.duration) * 100;
+    if (audioRef.current && trackDuration) {
+      const progress = (audioRef.current.currentTime / trackDuration) * 100;
       setProgress(progress);
     }
   };
@@ -157,7 +158,7 @@ const Player = () => {
               <Slider.Thumb className="block w-3 h-3 bg-white rounded-full hover:scale-110 transform -translate-y-1/4 cursor-pointer" />
             </Slider.Root>
             <span className="text-xs text-zinc-400">
-              {audioRef.current ? formatTime(audioRef.current.duration) : '0:00'}
+              {formatTime(trackDuration)}
             </span>
           </div>
         </div>
@@ -183,7 +184,7 @@ const Player = () => {
         ref={audioRef}
         src={`http://localhost:5000/${currentTrack.audio}`}
         onTimeUpdate={handleTimeUpdate}
-        onEnded={() => setIsPlaying(false)}
+        onEnded={playNextTrack}
       />
     </div>
   );

@@ -27,7 +27,8 @@ export class UsersService {
 
     let picturePath: string | undefined;
     if (picture) {
-      picturePath = await this.fileService.createFile(FileType.IMAGE, picture);
+      const pictureResult = await this.fileService.createFile(FileType.IMAGE, picture);
+      picturePath = pictureResult.path;
     }
 
     const user = await this.userModel.create({ 
@@ -114,7 +115,8 @@ export class UsersService {
       if (user.picture) {
         this.fileService.removeFile(user.picture);
       }
-      picturePath = await this.fileService.createFile(FileType.IMAGE, picture);
+      const pictureResult = await this.fileService.createFile(FileType.IMAGE, picture);
+      picturePath = pictureResult.path;
     }
 
     let updateQuery: any = { ...updateUserDto };

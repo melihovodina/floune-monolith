@@ -5,6 +5,7 @@ import * as uuid from 'uuid';
 import * as sharp from 'sharp';
 import * as ffmpeg from 'fluent-ffmpeg';
 import * as ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
+import * as mm from 'music-metadata'; 
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
@@ -15,7 +16,7 @@ export enum FileType {
 
 @Injectable()
 export class FileService {
-  async createFile(type: FileType, file): Promise<string> {
+  async createFile(type: FileType, file): Promise<{ path: string, duration?: number }> {
     try {
       const filePath = path.resolve(process.cwd(), 'static', type);
 
@@ -24,10 +25,10 @@ export class FileService {
       }
 
       let fileName: string;
+      let duration: number | undefined;
 
       if (type === FileType.IMAGE) {
         fileName = uuid.v4() + '.webp';
-
         await sharp(file.buffer)
           .webp({ quality: 50 })
           .toFile(path.resolve(filePath, fileName));
@@ -37,13 +38,18 @@ export class FileService {
         const tempFilePath = path.resolve(filePath, uuid.v4() + path.extname(file.originalname));
         fs.writeFileSync(tempFilePath, file.buffer);
 
-        await this.convertToAac(tempFilePath, path.resolve(filePath, fileName));
+        const metadata = await mm.parseFile(tempFilePath);
+        duration = metadata.format.duration ? Math.round(metadata.format.duration) : 0;
+
+        const outputPath = path.resolve(filePath, fileName);
+        await this.convertToAac(tempFilePath, outputPath);
+
         fs.unlinkSync(tempFilePath);
       } else {
         throw new HttpException('Unsupported file type', HttpStatus.BAD_REQUEST);
       }
 
-      return type + '/' + fileName;
+      return { path: type + '/' + fileName, duration };
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

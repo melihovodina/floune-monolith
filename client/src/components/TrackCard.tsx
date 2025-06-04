@@ -2,6 +2,7 @@ import React from 'react';
 import { Play, Pause } from 'lucide-react';
 import { Track } from '../types';
 import { usePlayer } from '../store/usePlayer';
+import { Link } from 'react-router-dom';
 
 interface TrackCardProps {
   track: Track;
@@ -54,17 +55,23 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
     return (
     <div className="bg-[#1a1f25] rounded-lg overflow-hidden group hover:bg-[#1e242b] transition">
       <div className="relative aspect-square">
-        <img
-          src={`http://localhost:5000/${track.picture}`}
-          alt={track.name}
-          className="w-full h-full object-cover select-none pointer-events-none"
-          draggable={false}
-        />
+        <Link to={`/track/${track._id}`}>
+          <img
+            src={`http://localhost:5000/${track.picture}`}
+            alt={track.name}
+            className="w-full h-full object-cover select-none pointer-events-none"
+            draggable={false}
+          />
+        </Link>
       </div>
       <div className="p-4 flex gap-4">
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white truncate">{track.name}</h3>
-          <p className="text-sm text-zinc-400 truncate">{track.artistName}</p>
+          <Link to={`/track/${track._id}`}>
+            <h3 className="font-semibold text-white truncate sm:hover:underline">{track.name}</h3>
+          </Link>
+          <Link to={`/profile/${track.artistName}`}>
+            <p className="text-sm text-zinc-400 truncate sm:hover:underline">{track.artistName}</p>
+          </Link>
         </div>
         <button
           className={`w-10 h-10 bg-[#ff5500] rounded-full flex items-center justify-center transition hover:scale-105

@@ -22,6 +22,7 @@ export interface Track {
   artistName: string;
   artistId: string
   text: string;
+  duration: number;
   listens: number;
   likes: number;
   picture: string;

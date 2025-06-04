@@ -48,7 +48,7 @@ const UploadTrack: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append('name', title);
-      formData.append('description', description);
+      formData.append('text', description);
       formData.append('audio', selectedAudioFile);
       if (selectedCoverArt) {
         formData.append('picture', selectedCoverArt);

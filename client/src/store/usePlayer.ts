@@ -20,7 +20,7 @@ interface PlayerState {
 export const usePlayer = create<PlayerState>((set) => ({
   currentTrack: null,
   isPlaying: false,
-  volume: 0.5,
+  volume: 0.1,
   queue: [],
 
   setTrack: (track) => set({ currentTrack: track, isPlaying: true }),

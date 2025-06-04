@@ -17,6 +17,9 @@ export class Track {
   @Prop({ default: "No description" })
   text: string;
 
+  @Prop()
+  duration: number;
+
   @Prop({ default: 0 })
   listens: number;
   

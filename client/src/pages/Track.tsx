@@ -110,7 +110,6 @@ const Track: React.FC = () => {
     return num?.toString() ?? '';
   };
 
-  // Для обновления количества подписчиков артиста после follow/unfollow
   const setArtistFollowers = (n: number) => {
     if (artist) setArtist({ ...artist, followers: n });
   };
@@ -181,7 +180,11 @@ const Track: React.FC = () => {
                         className="w-10 h-10 rounded-full object-cover mr-3"
                       />
                     ) : (
-                      <div className="w-10 h-10 bg-gray-700 rounded-full mr-3" />
+                      <img
+                        src={`/blank.webp`}
+                        alt={artist.name}
+                        className="w-10 h-10 rounded-full object-cover mr-3"
+                      />
                     )}
                     <div>
                       <Link
@@ -209,19 +212,19 @@ const Track: React.FC = () => {
             <div className="md:w-2/3">
               <div className="flex items-center mb-4">
                 <button
-                  className="w-12 h-12 flex items-center justify-center bg-[#ff5500] rounded-full hover:bg-orange-600 text-white rounded-full mr-4 transition"
+                  className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-[#ff5500] rounded-full hover:bg-orange-600 text-white mr-4 transition"
                   onClick={handlePlayPause}
                 >
                   {isCurrentTrack && isPlaying ? <Pause size={24} fill="white"/> : <Play size={24} className='ml-[2px]' fill="white"/>}
                 </button>
 
-                <div>
-                  <h1 className="text-4xl font-bold text-white">{track.name}</h1>
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-2xl sm:text-4xl font-bold text-white break-words">{track.name}</h1>
                 </div>
               </div>
 
               <div className="mb-8 p-2">
-                <p className="text-white">{track.text}</p>
+                <p className="text-white text-xl">{track.text}</p>
               </div>
             </div>
           </div>
