@@ -3,6 +3,7 @@ import { create } from 'zustand';
 interface AuthUser {
   _id: string;
   name: string;
+  role: 'user' | 'admin' | 'artist';
   token: string;
   likedTracks: string[];
   following: string[];

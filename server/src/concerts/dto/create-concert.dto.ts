@@ -1,6 +1,7 @@
 import { IsMongoId, IsString, IsDateString, IsInt, Min, IsPositive, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateConcertDto {
+  @IsOptional()
   @IsMongoId()
   artist: string;
 

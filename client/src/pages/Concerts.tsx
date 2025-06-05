@@ -4,6 +4,8 @@ import { Concert } from '../types';
 import { Search as SearchIcon, ChevronDown } from 'lucide-react';
 import { Listbox } from '@headlessui/react';
 import ConcertCard from '../components/ConcertCard';
+import { Link } from 'react-router-dom';
+import { useAuth } from '../store/useAuth';
 
 const searchByOptions = [
   { value: 'city', label: 'City' },
@@ -22,6 +24,7 @@ export default function Concerts() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchBy, setSearchBy] = useState<'city' | 'artist'>('city');
   const [sortBy, setSortBy] = useState<'new' | 'price_asc' | 'price_desc'>('new');
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchConcerts();
@@ -146,6 +149,16 @@ export default function Concerts() {
           </div>
         </div>
       </div>
+      {(user?.role === 'admin' || user?.role === 'artist') && (
+        <div className="flex sm:justify-end mb-4">
+          <Link
+            to="/concerts/create"
+            className="text-orange-500 hover:text-orange-400 text-sm font-medium ml-3 sm:mr-4"
+          >
+            Create Concert
+          </Link>
+        </div>
+      )}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-orange-500"></div>

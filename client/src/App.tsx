@@ -6,7 +6,7 @@ import Library from './pages/Library';
 import Profile from './pages/Profile';
 import SignIn from './pages/SignIn';
 import Concerts from './pages/Concerts';
-import ConcertDetails from './pages/ConcertDetails';
+import ConcertCreate from './pages/ConcertCreate';
 import Orders from './pages/Orders';
 import { useAuth } from './store/useAuth';
 import { useEffect } from 'react';
@@ -34,6 +34,7 @@ function App() {
             token,
             _id: res.data._id,
             name: res.data.name,
+            role: res.data.role,
             likedTracks: res.data.likedTracks,
             following: res.data.following
           });
@@ -61,7 +62,7 @@ function App() {
             <Route path="profile/:name" element={<Profile />} />
             <Route path="upload" element={<UploadTrack />} />
             <Route path="concerts" element={<Concerts />} />
-            <Route path="concerts/:id" element={<ConcertDetails />} />
+            <Route path="concerts/create" element={<ConcertCreate />} />
             <Route path="orders" element={<Orders />} />
           </Route>
         </Routes>

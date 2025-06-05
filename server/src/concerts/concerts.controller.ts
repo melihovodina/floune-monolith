@@ -19,9 +19,10 @@ export class ConcertsController {
     @Body() createConcertDto: CreateConcertDto,
     @UploadedFile() picture?
   ) {
-    if (req.user.role === 'artist') {
+    if (req.user.role === 'artist' || !createConcertDto.artist) {
       createConcertDto.artist = req.user._id;
     }
+
     return this.concertsService.create(createConcertDto, picture);
   }
 

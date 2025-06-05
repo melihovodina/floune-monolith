@@ -19,9 +19,9 @@ const SignIn: React.FC = () => {
 
     try {
       const response = await loginApi({ email, password });
-      const { token, _id, name, likedTracks, following } = response.data;
+      const { token, _id, name, likedTracks, following, role } = response.data;
 
-      const authUser = { token, _id, name, likedTracks, following: following || [] };
+      const authUser = { token, _id, name, likedTracks, following: following || [], role };
       localStorage.setItem('token', token);
       setAuth(authUser);
 

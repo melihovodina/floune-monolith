@@ -20,9 +20,9 @@ const SignUp: React.FC = () => {
 
     try {
       const response = await registerApi({ email, password, name });
-      const { token, _id, name: userName, likedTracks, following } = response.data;
+      const { token, _id, name: userName, likedTracks, following, role } = response.data;
 
-      const authUser = { token, _id, name: userName, likedTracks, following: following || [] };
+      const authUser = { token, _id, name: userName, likedTracks, following: following || [], role };
       localStorage.setItem('token', token);
       setAuth(authUser);
 
