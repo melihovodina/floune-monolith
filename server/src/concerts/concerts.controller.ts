@@ -36,6 +36,11 @@ export class ConcertsController {
     return this.concertsService.findOne(id);
   }
 
+  @Post('/by-ids')
+  async findByIds(@Body('ids') ids: string[]) {
+    return this.concertsService.findByIds(ids);
+  }
+
   @Get('/search')
   search(@Query('query') query: string) {
     return this.concertsService.search(query);

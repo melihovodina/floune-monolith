@@ -37,6 +37,9 @@ export class User {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Concert' }] })
   concerts: ObjectId[]
 
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Order' }] })
+  orders: ObjectId[]
+
   @Prop()
   picture: string;
 }

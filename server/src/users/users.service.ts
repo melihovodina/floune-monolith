@@ -267,6 +267,29 @@ export class UsersService {
     }
   }
 
+  async toggleOrderInUser(userId: string, orderId: string, add: boolean = false) {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new BadRequestException(`User with id ${userId} not found`);
+    }
+
+    if (!user.orders) {
+      user.orders = [];
+    }
+
+    if (add) {
+      if (!user.orders.some(id => id.toString() === orderId)) {
+        user.orders.push(orderId as any);
+        await user.save();
+      }
+      return { orders: user.orders, action: 'added' };
+    } else {
+      user.orders = user.orders.filter(id => id.toString() !== orderId);
+      await user.save();
+      return { orders: user.orders, action: 'removed' };
+    }
+  }
+
   async banUser(id: string) {
     const user = await this.userModel.findById(id).exec();
     if (!user) {

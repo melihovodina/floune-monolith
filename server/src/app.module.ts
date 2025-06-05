@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { config } from "dotenv";
 import { ConcertsModule } from './concerts/concerts.module';
+import { OrdersModule } from './orders/orders.module';
 config({path: "./.env"})
 
 @Module({
@@ -18,7 +19,8 @@ config({path: "./.env"})
     FileModule,
     UsersModule,
     AuthModule,
-    ConcertsModule
+    ConcertsModule,
+    OrdersModule
   ]
 })
 

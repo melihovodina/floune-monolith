@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Concert } from '../types';
+import { createOrder } from '../api/api';
 
 interface ConcertCardProps {
   concert: Concert;
@@ -7,6 +8,24 @@ interface ConcertCardProps {
 
 export default function ConcertCard({ concert }: ConcertCardProps) {
   const [count, setCount] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  const handleOrder = async () => {
+    setLoading(true);
+    try {
+      await createOrder({
+        concertId: concert._id,
+        date: new Date().toISOString(),
+        ticketsQuantity: count,
+        totalPrice: count * concert.ticketPrice,
+      });
+      alert(`Заказ на ${count} билет(ов) успешно создан!`);
+    } catch (error) {
+      alert('Ошибка при создании заказа');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div
@@ -56,10 +75,10 @@ export default function ConcertCard({ concert }: ConcertCardProps) {
             >+</button>
             <button
               className="ml-2 bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded transition"
-              disabled={concert.ticketsQuantity === 0}
-              onClick={() => alert(`Ordered ${count} ticket(s)!`)}
+              disabled={concert.ticketsQuantity === 0 || loading}
+              onClick={handleOrder}
             >
-              Order
+              {loading ? 'Ordering...' : 'Order'}
             </button>
           </div>
         </div>  

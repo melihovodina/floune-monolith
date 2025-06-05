@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, Library, Ticket, X } from 'lucide-react';
+import { Home, Search, Library, Ticket, X, ShoppingCart } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -14,6 +14,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     { name: 'Search', icon: Search, path: '/search' },
     { name: 'Library', icon: Library, path: '/library' },
     { name: 'Concerts', icon: Ticket, path: '/concerts' },
+    { name: 'Orders', icon: ShoppingCart, path: '/orders' },
   ];
 
   return (

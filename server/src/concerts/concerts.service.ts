@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Concert, ConcertDocument } from './entities/concert.entity';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateConcertDto } from './dto/create-concert.dto';
 import { UpdateConcertDto } from './dto/update-concert.dto';
 import { FileService, FileType } from '../file/file.service';
@@ -57,6 +57,11 @@ export class ConcertsService {
     return concert;
   }
 
+  async findByIds(ids: string[]) {
+    const objectIds = ids.map(id => new Types.ObjectId(id));
+    return this.concertModel.find({ _id: { $in: objectIds } }).populate('artist', '_id name picture').lean();
+  }
+
   async search(query: string) {
     const concerts = await this.concertModel.find({
       $or: [
@@ -107,6 +112,20 @@ export class ConcertsService {
     ).lean();
 
     return updated;
+  }
+
+  async changeTicketsQuantity(concertId: string, quantity: number) {
+    const concert = await this.concertModel.findById(concertId);
+    if (!concert) {
+      throw new BadRequestException(`Concert with id ${concertId} not found`);
+    }
+    const newQuantity = concert.ticketsQuantity + quantity;
+    if (newQuantity < 0) {
+      throw new BadRequestException('Not enough tickets available');
+    }
+    concert.ticketsQuantity = newQuantity;
+    await concert.save();
+    return concert;
   }
 
   async remove(id: string) {

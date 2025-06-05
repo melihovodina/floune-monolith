@@ -109,6 +109,10 @@ export const getAllConcerts = async (onlyNew: boolean = false) => {
   });
 };
 
+export const getConcertsByIds = async (ids: string[]) => {
+  return axiosInstance.post('/concerts/by-ids', { ids });
+};
+
 export const searchConcerts = async (query: string) => {
   return axiosInstance.get('/concerts/search', {
     params: { query },
@@ -129,4 +133,23 @@ export const updateConcert = async (id: string, data: FormData) => {
 
 export const deleteConcert = async (id: string) => {
   return axiosInstance.delete(`/concerts/${id}`);
+};
+
+export const getAllOrders = async (dateFrom?: string, dateTo?: string) => {
+  return axiosInstance.get('/orders', {
+    params: { dateFrom, dateTo },
+  });
+};
+
+export const createOrder = async (data: {
+  concertId: string;
+  date: string;
+  ticketsQuantity: number;
+  totalPrice: number;
+}) => {
+  return axiosInstance.post('/orders', data);
+};
+
+export const cancelOrder = async (orderId: string) => {
+  return axiosInstance.patch(`/orders/${orderId}/cancel`);
 };

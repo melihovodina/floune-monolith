@@ -16,5 +16,6 @@ import { UsersModule } from '../users/users.module';
   ],
   controllers: [ConcertsController],
   providers: [ConcertsService],
+  exports: [ConcertsService]
 })
 export class ConcertsModule {}
