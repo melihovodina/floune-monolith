@@ -28,17 +28,14 @@ export class User {
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Track' }] })
   uploadedTracks: ObjectId[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' }] })
-  likedPlaylists: ObjectId[];
-
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Playlist' }] })
-  uploadedPlaylists: ObjectId[];
-
   @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'User' }] })
   following: ObjectId[];
 
   @Prop({ default: 0 })
   followers: number;  
+
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Concert' }] })
+  concerts: ObjectId[]
 
   @Prop()
   picture: string;

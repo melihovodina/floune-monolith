@@ -102,3 +102,33 @@ export const deleteTrack = async (id: string) => {
 export const listenTrack = async (id: string) => {
   return axiosInstance.post(`/tracks/listen/${id}`);
 };
+
+export const getAllConcerts = async () => {
+  return axiosInstance.get('/concerts');
+};
+
+export const getConcertById = async (id: string) => {
+  return axiosInstance.get(`/concerts/${id}`);
+};
+
+export const searchConcerts = async (query: string) => {
+  return axiosInstance.get('/concerts/search', {
+    params: { query },
+  });
+};
+
+export const createConcert = async (data: FormData) => {
+  return axiosInstance.post('/concerts', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+export const updateConcert = async (id: string, data: FormData) => {
+  return axiosInstance.patch(`/concerts/${id}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+export const deleteConcert = async (id: string) => {
+  return axiosInstance.delete(`/concerts/${id}`);
+};

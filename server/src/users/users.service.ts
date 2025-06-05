@@ -244,6 +244,29 @@ export class UsersService {
     }
   }
 
+  async toggleConcertInUser(userId: string, concertId: string, add: boolean = false) {
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new BadRequestException(`User with id ${userId} not found`);
+    }
+
+    if (!user.concerts) {
+      user.concerts = [];
+    }
+
+    if (add) {
+      if (!user.concerts.some(id => id.toString() === concertId)) {
+        user.concerts.push(concertId as any);
+        await user.save();
+      }
+      return { concerts: user.concerts, action: 'added' };
+    } else {
+      user.concerts = user.concerts.filter(id => id.toString() !== concertId);
+      await user.save();
+      return { concerts: user.concerts, action: 'removed' };
+    }
+  }
+
   async banUser(id: string) {
     const user = await this.userModel.findById(id).exec();
     if (!user) {

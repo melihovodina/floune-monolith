@@ -6,8 +6,8 @@ import * as path from 'path'
 import {ServeStaticModule} from "@nestjs/serve-static";
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { PlaylistModule } from './playlist/playlist.module';
 import { config } from "dotenv";
+import { ConcertsModule } from './concerts/concerts.module';
 config({path: "./.env"})
 
 @Module({
@@ -18,7 +18,7 @@ config({path: "./.env"})
     FileModule,
     UsersModule,
     AuthModule,
-    PlaylistModule
+    ConcertsModule
   ]
 })
 

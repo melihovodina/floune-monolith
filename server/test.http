@@ -1,0 +1,39 @@
+### Создать концерт
+POST http://localhost:5000/concerts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lbGlob3hhQGdtYWlsLmNvbSIsImlkIjoiNjg0MDVmZGZmOWRmMGNjZjdlNjU4N2Y3Iiwicm9sZSI6ImFkbWluIiwibmFtZSI6Im1lbGloIiwiaWF0IjoxNzQ5MDg0MjMxLCJleHAiOjE3NDkxNzA2MzF9.5ynmR3A_kpY7eAOzgj4TaZ9bN67yTJcWCNtA1F9aEzs
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="venue"
+
+My Concert Venue
+--boundary
+Content-Disposition: form-data; name="city"
+
+My City
+--boundary
+Content-Disposition: form-data; name="artistName"
+
+My Artist Name
+--boundary
+Content-Disposition: form-data; name="date"
+
+2025-06-05T19:00:00.000Z
+--boundary
+Content-Disposition: form-data; name="ticketPrice"
+
+1500
+--boundary
+Content-Disposition: form-data; name="ticketsQuantity"
+
+100
+--boundary
+Content-Disposition: form-data; name="picture"; filename="cover.jpg"
+Content-Type: image/jpeg
+
+< ./cover.jpg
+--boundary--
+
+###
+GET http://localhost:5000/users/68405fdff9df0ccf7e6587f7
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1lbGlob3hhQGdtYWlsLmNvbSIsImlkIjoiNjg0MDVmZGZmOWRmMGNjZjdlNjU4N2Y3Iiwicm9sZSI6ImFkbWluIiwibmFtZSI6Im1lbGloIiwiaWF0IjoxNzQ5MDg0MjMxLCJleHAiOjE3NDkxNzA2MzF9.5ynmR3A_kpY7eAOzgj4TaZ9bN67yTJcWCNtA1F9aEzs
