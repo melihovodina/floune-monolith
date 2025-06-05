@@ -73,7 +73,12 @@ export default function ConcertCreate() {
       await createConcert(formData);
 
       setIsUploading(false);
-      navigate('/concerts');
+
+      if (user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/concerts');
+      }
     } catch (err: any) {
       setIsUploading(false);
       setError('Failed to create concert');

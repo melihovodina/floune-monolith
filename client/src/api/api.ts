@@ -153,3 +153,28 @@ export const createOrder = async (data: {
 export const cancelOrder = async (orderId: string) => {
   return axiosInstance.patch(`/orders/${orderId}/cancel`);
 };
+
+// --- ADMIN USERS ---
+export const adminGetUserById = async (id: string) => {
+  return axiosInstance.get(`/users/${id}`);
+};
+
+export const adminUpdateUser = async (id: string, data: FormData) => {
+  return axiosInstance.patch(`/users/${id}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
+export const adminBanUser = async (id: string) => {
+  return axiosInstance.patch(`/users/ban/${id}`);
+};
+
+export const adminDeleteUser = async (id: string) => {
+  return axiosInstance.delete(`/users/${id}`);
+};
+
+export const adminCreateUser = async (data: FormData) => {
+  return axiosInstance.post('/users', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};

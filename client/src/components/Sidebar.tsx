@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Search, Library, Ticket, X, ShoppingCart } from 'lucide-react';
+import { Home, Search, Library, Ticket, X, ShoppingCart, Settings } from 'lucide-react';
+import { useAuth } from '../store/useAuth';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const location = useLocation();
+  const { user } = useAuth();
   
   const navigation = [
     { name: 'Home', icon: Home, path: '/' },
@@ -15,6 +17,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     { name: 'Library', icon: Library, path: '/library' },
     { name: 'Concerts', icon: Ticket, path: '/concerts' },
     { name: 'Orders', icon: ShoppingCart, path: '/orders' },
+    ...(user?.role === 'admin' ? [{ name: 'Admin', icon: Settings, path: '/admin' }] : []),
   ];
 
   return (
@@ -61,4 +64,4 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   );
 };
 
-export default Sidebar
+export default Sidebar;

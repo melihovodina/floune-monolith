@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, X, Music } from 'lucide-react';
 import { createTrack } from '../api/api';
+import { useAuth } from '../store/useAuth';
 
 const UploadTrack: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -11,6 +12,7 @@ const UploadTrack: React.FC = () => {
   const [coverArtPreview, setCoverArtPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const handleAudioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -38,7 +40,7 @@ const UploadTrack: React.FC = () => {
     setCoverArtPreview(null);
   };
   
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedAudioFile || !title.trim()) return;
 
@@ -56,12 +58,17 @@ const UploadTrack: React.FC = () => {
       await createTrack(formData);
 
       setIsUploading(false);
-      navigate('/library');
+
+      if (user?.role === 'admin') {
+        navigate('/admin');
+      } else {
+        navigate('/library');
+      }
     } catch (error) {
       setIsUploading(false);
       alert('Failed to upload track');
     }
-  };
+  };  
   
   return (
     <div className="max-w-3xl mx-auto py-6">

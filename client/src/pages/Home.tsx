@@ -55,7 +55,6 @@ return (
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl sm:text-2xl font-bold text-white">Trending Tracks</h2>
-          <Link to="#" className="text-[#ff5500] hover:underline text-sm sm:text-base">See All</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {trendingTracks.map((track, index) => (
@@ -67,7 +66,6 @@ return (
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl sm:text-2xl font-bold text-white">New Releases</h2>
-          <Link to="#" className="text-[#ff5500] hover:underline text-sm sm:text-base">See All</Link>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {newReleases.map((track, index) => (
@@ -79,9 +77,6 @@ return (
       <section className="mb-10">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-white">Popular Artists</h2>
-          <Link to="/artists" className="text-orange-500 hover:text-orange-400 text-sm font-medium">
-            See All
-          </Link>
         </div>
         <div className="flex overflow-x-auto space-x-4 scrollbar-hide">
           {artists.map((artist, index) => (
