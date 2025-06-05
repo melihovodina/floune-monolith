@@ -15,7 +15,15 @@ export class ConcertsService {
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {}
 
-  async create(createConcertDto: CreateConcertDto, picture?) {
+    async create(createConcertDto: CreateConcertDto, picture?) {
+    const concertDate = new Date(createConcertDto.date);
+    const now = new Date();
+    const minDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+
+    if (concertDate < minDate) {
+      throw new BadRequestException('Concert date must be at least 3 days from now');
+    }
+
     let picturePath: string | undefined;
     if (picture) {
       const pictureResult = await this.fileService.createFile(FileType.IMAGE, picture);
@@ -32,8 +40,13 @@ export class ConcertsService {
     return concert;
   }
 
-  async findAll() {
-    return this.concertModel.find().populate('artist', '_id name picture').lean();
+  async findAll(onlyNew = false) {
+    const now = new Date();
+    const query: any = {};
+    if (onlyNew) {
+      query.date = { $gte: now };
+    }
+    return this.concertModel.find(query).populate('artist', '_id name picture').lean();
   }
 
   async findOne(id: string) {

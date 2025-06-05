@@ -178,8 +178,7 @@ export default function Search() {
             </button>
           </div>
           {tab === 'tracks' && (
-            <div className="flex gap-4">
-              {/* Custom Search By Listbox */}
+            <div className="flex gap-4 justify-center">
               <Listbox value={searchBy} onChange={handleChangeSearchBy}>
                 <div className="relative min-w-[120px]">
                   <Listbox.Button className="bg-[#1a1f25] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer flex items-center justify-between w-full">

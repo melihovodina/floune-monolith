@@ -34,7 +34,7 @@ export default function Concerts() {
   const fetchConcerts = async () => {
     setIsLoading(true);
     try {
-      const res = await getAllConcerts();
+      const res = await getAllConcerts(true);
       setConcerts(res.data);
     } catch (e) {
       setConcerts([]);
@@ -99,7 +99,7 @@ export default function Concerts() {
               <SearchIcon className="text-gray-400" size={20} />
             </button>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-4 justify-center">
             <Listbox value={searchBy} onChange={setSearchBy}>
               <div className="relative min-w-[120px]">
                 <Listbox.Button className="bg-[#1a1f25] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer flex items-center justify-between w-full">
@@ -150,7 +150,7 @@ export default function Concerts() {
         </div>
       </div>
       {(user?.role === 'admin' || user?.role === 'artist') && (
-        <div className="flex sm:justify-end mb-4">
+        <div className="flex justify-center sm:justify-end mb-4">
           <Link
             to="/concerts/create"
             className="text-orange-500 hover:text-orange-400 text-sm font-medium ml-3 sm:mr-4"

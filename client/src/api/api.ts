@@ -103,12 +103,10 @@ export const listenTrack = async (id: string) => {
   return axiosInstance.post(`/tracks/listen/${id}`);
 };
 
-export const getAllConcerts = async () => {
-  return axiosInstance.get('/concerts');
-};
-
-export const getConcertById = async (id: string) => {
-  return axiosInstance.get(`/concerts/${id}`);
+export const getAllConcerts = async (onlyNew: boolean = false) => {
+  return axiosInstance.get('/concerts', {
+    params: onlyNew ? { new: true } : {},
+  });
 };
 
 export const searchConcerts = async (query: string) => {

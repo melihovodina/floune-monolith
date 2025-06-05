@@ -28,9 +28,6 @@ export class Concert {
   @Prop({ required: true })
   ticketPrice: number;
 
-  @Prop({ required: true, default: false })
-  approved: boolean;
-
   @Prop()
   picturePath: string;
 }

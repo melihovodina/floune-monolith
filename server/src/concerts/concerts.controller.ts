@@ -27,8 +27,8 @@ export class ConcertsController {
   }
 
   @Get()
-  findAll() {
-    return this.concertsService.findAll();
+  findAll(@Query('new') isNew?: string) {
+    return this.concertsService.findAll(isNew === 'true');
   }
 
   @Get(':id')

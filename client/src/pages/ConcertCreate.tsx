@@ -47,6 +47,14 @@ export default function ConcertCreate() {
       return;
     }
 
+    const selectedDate = new Date(date);
+    const now = new Date();
+    const minDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+    if (selectedDate < minDate) {
+      setError('Concert date must be at least 3 days from now');
+      return;
+    }
+
     setIsUploading(true);
 
     try {
