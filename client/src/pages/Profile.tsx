@@ -80,6 +80,10 @@ export default function Profile() {
 
       const res = await updateProfile(formData);
       setUser(res.data);
+      setAuth({
+        ...currentUser!,
+        ...res.data,
+      });
       setEditMode(false);
       setNewAvatar(null);
       setRemoveAvatar(false);

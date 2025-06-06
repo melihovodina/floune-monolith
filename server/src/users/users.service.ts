@@ -86,7 +86,7 @@ export class UsersService {
 
     const user = await userQuery.lean();
     if (!user) {
-      throw new BadRequestException(`User with ${field} ${value} not found`);
+      throw new BadRequestException(`User with this ${field} not found`);
     }
     return user;
   }

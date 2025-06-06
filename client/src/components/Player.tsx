@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
-import { Play, Pause, SkipForward, SkipBack, Volume2, Heart } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, Volume2 } from 'lucide-react';
 import * as Slider from '@radix-ui/react-slider';
 import { usePlayer } from '../store/usePlayer';
 import { useAuth } from '../store/useAuth';
-import { addTrackToFavorites, removeTrackFromFavorites } from '../api/api';
 import { Link } from 'react-router-dom';
+import LikeButton from './LikeButton';
 
 const Player = () => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [progress, setProgress] = useState(0);
-  const { user, setAuth } = useAuth();
+  const { user } = useAuth();
   const {
     currentTrack,
     isPlaying,
@@ -61,24 +61,6 @@ const Player = () => {
     }
   };
 
-  const handleToggleFavorite = async () => {
-    if (!user || !currentTrack) return;
-
-    if (isFavorite) {
-      await removeTrackFromFavorites(currentTrack._id);
-      setAuth({
-        ...user,
-        likedTracks: user.likedTracks.filter(id => id !== currentTrack._id),
-      });
-    } else {
-      await addTrackToFavorites(currentTrack._id);
-      setAuth({
-        ...user,
-        likedTracks: [...user.likedTracks, currentTrack._id],
-      });
-    }
-  }
-
   if (!currentTrack) return null;
 
   return (
@@ -105,17 +87,10 @@ const Player = () => {
             </Link>
           </div>
           <div className="ml-auto flex-shrink-0">
-            <button
-              className="mr-2 sm:ml-1"
-              onClick={handleToggleFavorite}
-              aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-            >
-              <Heart
-                size={18}
-                className={isFavorite ? 'text-orange-500 fill-orange-500' : 'text-zinc-400'}
-                fill={isFavorite ? 'currentColor' : 'none'}
-              />
-            </button>
+            <LikeButton
+              isFavorite={isFavorite}
+              trackId={currentTrack._id}
+            />
           </div>
         </div>
 

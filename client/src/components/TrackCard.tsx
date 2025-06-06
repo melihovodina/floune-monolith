@@ -1,10 +1,11 @@
 import React from 'react';
-import { Play, Pause, Heart } from 'lucide-react';
+import { Play, Pause } from 'lucide-react';
 import { Track } from '../types';
 import { usePlayer } from '../store/usePlayer';
 import { Link } from 'react-router-dom';
-import { listenTrack, addTrackToFavorites, removeTrackFromFavorites } from '../api/api';
 import { useAuth } from '../store/useAuth';
+import LikeButton from './LikeButton';
+import { listenTrack } from '../api/api';
 
 interface TrackCardProps {
   track: Track;
@@ -14,7 +15,7 @@ interface TrackCardProps {
 
 const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) => {
   const { currentTrack, isPlaying, setQueueAndTrack, setIsPlaying } = usePlayer();
-  const { user, setAuth } = useAuth();
+  const { user } = useAuth();
 
   const isCurrentTrack = currentTrack?._id === track._id;
   const isFavorite = !!user?.likedTracks?.includes(track._id);
@@ -25,25 +26,6 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
     } else {
       setQueueAndTrack(queue, track);
       await listenTrack(track._id);
-    }
-  };
-
-  const handleToggleFavorite = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    if (!user) return;
-    if (isFavorite) {
-      await removeTrackFromFavorites(track._id);
-      setAuth({
-        ...user,
-        likedTracks: user.likedTracks.filter(id => id !== track._id),
-      });
-    } else {
-      await addTrackToFavorites(track._id);
-      setAuth({
-        ...user,
-        likedTracks: [...user.likedTracks, track._id],
-      });
     }
   };
 
@@ -72,18 +54,10 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
           <p className="text-sm font-medium text-white truncate">{track.name}</p>
           <p className="text-xs text-gray-400 truncate">{track.artistName}</p>
         </div>
-        <button
-          className="p-2 text-zinc-400 hover:text-white transition rounded-full hover:bg-zinc-700"
-          title="Add to favorites"  
-          onClick={handleToggleFavorite}  
-          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-        >
-          <Heart
-            size={18}
-            className={isFavorite ? 'text-orange-500 fill-orange-500' : 'text-zinc-400'}
-            fill={isFavorite ? 'currentColor' : 'none'}
-          />
-        </button>
+        <LikeButton
+          isFavorite={isFavorite}
+          trackId={track._id}
+        />
       </div>
     );
   }

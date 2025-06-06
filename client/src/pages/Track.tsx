@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Play, Pause, Heart, Share2, Music } from 'lucide-react';
+import { Play, Pause, Share2, Music } from 'lucide-react';
 import { getTrackById, getUserById, listenTrack } from '../api/api';
 import { usePlayer } from '../store/usePlayer';
 import { FastAverageColor } from 'fast-average-color';
 import Notification from '../components/Notification';
 import FollowButton from '../components/FollowButton';
+import LikeButton from '../components/LikeButton';
+import { useAuth } from '../store/useAuth';
 
 const Track: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +19,7 @@ const Track: React.FC = () => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [showCopied, setShowCopied] = useState(false);
   const fac = new FastAverageColor();
+   const { user } = useAuth();
   const {
     currentTrack,
     isPlaying,
@@ -25,6 +28,7 @@ const Track: React.FC = () => {
   } = usePlayer();
 
   const isCurrentTrack = currentTrack?._id === id;
+  const isFavorite = !!user?.likedTracks?.includes(track?._id);
 
   useEffect(() => {
     if (!id) return;
@@ -154,9 +158,12 @@ const Track: React.FC = () => {
                     <Music size={20} className="mr-1" />
                     <span className="text-sm">{formatNumber(track.listens ?? 0)}</span>
                   </div>
-                  <div className="text-gray-400 transition group flex items-center">
-                    <Heart size={20} />
-                    <span className="ml-1 text-sm">{formatNumber(track.likes)}</span>
+                  <div className="flex items-center">
+                    <LikeButton
+                      isFavorite={isFavorite}
+                      trackId={track._id}
+                    />
+                    <span className="ml-1 text-sm text-gray-400">{formatNumber(track.likes)}</span>
                   </div>
                   <button
                     className="text-gray-400 hover:text-white transition group flex items-center"

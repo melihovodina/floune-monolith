@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Home, Search, Library, Ticket, X, ShoppingCart, Settings } from 'lucide-react';
 import { useAuth } from '../store/useAuth';
 
@@ -9,16 +9,26 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const navigation = [
     { name: 'Home', icon: Home, path: '/' },
     { name: 'Search', icon: Search, path: '/search' },
-    { name: 'Library', icon: Library, path: '/library' },
+    { name: 'Library', icon: Library, path: '/library', protected: true },
     { name: 'Concerts', icon: Ticket, path: '/concerts' },
-    { name: 'Orders', icon: ShoppingCart, path: '/orders' },
+    { name: 'Orders', icon: ShoppingCart, path: '/orders', protected: true },
     ...(user?.role === 'admin' ? [{ name: 'Admin', icon: Settings, path: '/admin' }] : []),
   ];
+
+  const handleNavClick = (item: typeof navigation[0]) => {
+    onClose();
+    if (item.protected && !user) {
+      navigate('/signin');
+    } else {
+      navigate(item.path);
+    }
+  };
 
   return (
     <div className={`
@@ -45,11 +55,10 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       </div>
       <nav>
         {navigation.map((item) => (
-          <Link
+          <button
             key={item.name}
-            to={item.path}
-            onClick={onClose}
-            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors ${
+            onClick={() => handleNavClick(item)}
+            className={`flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg transition-colors w-full text-left ${
               location.pathname === item.path
                 ? 'bg-[#1a1f25] text-white'
                 : 'text-zinc-400 hover:text-white hover:bg-[#1a1f25]'
@@ -57,7 +66,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           >
             <item.icon size={20} />
             {item.name}
-          </Link>
+          </button>
         ))}
       </nav>
     </div>
