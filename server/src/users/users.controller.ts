@@ -18,9 +18,10 @@ export class UsersController {
   getAll(
     @Query('count') count: number,
     @Query('offset') offset: number,
-    @Query('sortBy') sortBy: UsersSortBy = 'createdAt'
+    @Query('sortBy') sortBy: UsersSortBy = 'createdAt',
+    @Query('role') role?: string
   ) {
-    return this.usersService.getAll(count, offset, sortBy);
+    return this.usersService.getAll(count, offset, sortBy, false, role); // передаём role
   }
 
   @Get('/name/:name')

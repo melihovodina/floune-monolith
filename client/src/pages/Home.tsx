@@ -27,9 +27,8 @@ export default function Home() {
 
   const fetchArtists = async () => {
       try {
-        const response = await getAllUsers(10, 0, 'followers');
-        const filteredArtists = response.data.filter((user: User) => user.role === 'artist');
-        setArtists(filteredArtists);
+        const response = await getAllUsers(7, 0, 'followers', 'artist');
+        setArtists(response.data);
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching artists:', error);
@@ -78,7 +77,7 @@ return (
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-white">Popular Artists</h2>
         </div>
-        <div className="flex overflow-x-auto space-x-4 scrollbar-hide">
+        <div className="flex overflow-x-auto space-x-4">
           {artists.map((artist, index) => (
             <div key={index} className="flex-shrink-0">
               <Link to={`/profile/${artist.name}`} className="block group">

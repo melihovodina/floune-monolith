@@ -43,12 +43,13 @@ export class UsersService {
     count: number,
     offset: number,
     sortBy: UsersSortBy = 'createdAt',
-    full: boolean = false
+    full: boolean = false,
+    role?: string
   ) {
     const query: any = {};
 
-    if (['user', 'artist', 'admin'].includes(sortBy)) {
-      query.role = sortBy;
+    if (role && ['user', 'artist', 'admin'].includes(role)) {
+      query.role = role;
     }
 
     const sort: Record<string, 1 | -1> = {};

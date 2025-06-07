@@ -150,7 +150,7 @@ export default function Search() {
           value="artists"
           className="px-4 py-2 text-zinc-400 data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-orange-500"
         >
-          Artists
+          Users
         </Tabs.Trigger>
       </Tabs.List>
 
@@ -162,7 +162,7 @@ export default function Search() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder={tab === 'tracks' ? "Search for tracks..." : "Search for artists..."}
+              placeholder={tab === 'tracks' ? "Search for tracks..." : "Search for users..."}
               className="w-full bg-[#1a1f25] rounded-lg py-3 px-4 pr-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
             <button
