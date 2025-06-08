@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getAllOrders, cancelOrder, getConcertsByIds } from '../api/api';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 type Order = {
   _id: string;
@@ -105,7 +106,12 @@ export default function Orders() {
             >
               <div>
                 <div className="font-semibold text-lg mb-1 text-white">
-                  {order.concert?.artistName || 'Concert'} — {order.concert?.city || ''}
+                  <Link
+                    to={`/concerts/${order.concertId}`}
+                    className="hover:underline text-orange-400"
+                  >
+                    {order.concert?.artistName || 'Concert'} — {order.concert?.city || ''}
+                  </Link>
                 </div>
                 <div className="text-gray-400 text-sm mb-1">
                   Venue: {order.concert?.venue || '-'}
@@ -114,7 +120,7 @@ export default function Orders() {
                   Date: {order.concert?.date ? format(new Date(order.concert.date), 'dd.MM.yyyy') : (order.date ? format(new Date(order.date), 'dd.MM.yyyy') : '-')}
                 </div>
                 <div className="text-gray-400 text-sm">
-                  Tickets: {order.ticketsQuantity} | Total: {order.totalPrice}₽
+                  Tickets: {order.ticketsQuantity} | Total: {order.totalPrice}$
                 </div>
                 {order.cancelled && (
                   <div className="text-red-500 text-xs mt-2 font-semibold">Cancelled</div>

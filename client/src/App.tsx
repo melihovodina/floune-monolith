@@ -15,6 +15,7 @@ import UploadTrack from './pages/UploadTrack';
 import SignUp from './pages/SignUp';
 import Track from './pages/Track';
 import Admin from './pages/Admin';
+import ConcertDetails from './pages/ConcertDeatils';
 
 function App() {
   const { setAuth } = useAuth();
@@ -64,6 +65,7 @@ function App() {
             <Route path="upload" element={<UploadTrack />} />
             <Route path="concerts" element={<Concerts />} />
             <Route path="concerts/create" element={<ConcertCreate />} />
+            <Route path="concerts/:id" element={<ConcertDetails />} />
             <Route path="orders" element={<Orders />} />
             <Route path="admin" element={<Admin />} />
           </Route>

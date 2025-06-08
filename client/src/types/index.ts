@@ -42,6 +42,7 @@ export interface Concert {
   city: string;
   venue: string;
   date: string;
+  description: string;
   ticketsQuantity: number;
   ticketPrice: number;
   approved: boolean;
