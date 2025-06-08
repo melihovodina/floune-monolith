@@ -1,31 +1,10 @@
-import { useState } from 'react';
 import { Concert } from '../types';
-import { createOrder } from '../api/api';
 
 interface ConcertCardProps {
   concert: Concert;
 }
 
 export default function ConcertCard({ concert }: ConcertCardProps) {
-  const [count, setCount] = useState(1);
-  const [loading, setLoading] = useState(false);
-
-  const handleOrder = async () => {
-    setLoading(true);
-    try {
-      await createOrder({
-        concertId: concert._id,
-        date: new Date().toISOString(),
-        ticketsQuantity: count,
-        totalPrice: count * concert.ticketPrice,
-      });
-      alert(`Заказ на ${count} билет(ов) успешно создан!`);
-    } catch (error) {
-      alert('Ошибка при создании заказа');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div
@@ -59,28 +38,6 @@ export default function ConcertCard({ concert }: ConcertCardProps) {
           <span className="text-zinc-400 text-sm ">
             Tickets: {concert.ticketsQuantity}
           </span>
-          <div className="flex items-center gap-2 ml-4">
-            <button
-              className="bg-zinc-700 text-white px-2 rounded disabled:opacity-50"
-              onClick={() => setCount((c) => Math.max(1, c - 1))}
-              disabled={count <= 1}
-              aria-label="Decrease"
-            >-</button>
-            <span className="w-8 text-center text-white ">{count}</span>
-            <button
-              className="bg-zinc-700 text-white px-2 rounded disabled:opacity-50"
-              onClick={() => setCount((c) => Math.min(concert.ticketsQuantity, c + 1))}
-              disabled={count >= concert.ticketsQuantity}
-              aria-label="Increase"
-            >+</button>
-            <button
-              className="ml-2 bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded transition"
-              disabled={concert.ticketsQuantity === 0 || loading}
-              onClick={handleOrder}
-            >
-              {loading ? 'Ordering...' : 'Order'}
-            </button>
-          </div>
         </div>  
       </div>
     </div>

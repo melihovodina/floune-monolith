@@ -23,6 +23,9 @@ export class Concert {
   date: Date;
 
   @Prop({ required: true })
+  description: string;
+
+  @Prop({ required: true })
   ticketsQuantity: number;
 
   @Prop({ required: true })

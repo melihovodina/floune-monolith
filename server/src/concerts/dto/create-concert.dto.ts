@@ -14,6 +14,10 @@ export class CreateConcertDto {
   @IsDateString()
   date: string;
 
+  @IsOptional()
+  @IsString()
+  description: string;
+
   @IsInt()
   @Min(1)
   ticketsQuantity: number;

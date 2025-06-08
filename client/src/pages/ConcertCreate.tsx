@@ -9,6 +9,7 @@ export default function ConcertCreate() {
   const [venue, setVenue] = useState('');
   const [city, setCity] = useState('');
   const [date, setDate] = useState('');
+  const [description, setDescription] = useState('');
   const [ticketPrice, setTicketPrice] = useState('');
   const [ticketsQuantity, setTicketsQuantity] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -64,6 +65,7 @@ export default function ConcertCreate() {
       formData.append('venue', venue);
       formData.append('city', city);
       formData.append('date', date);
+      formData.append('description', description);
       formData.append('ticketPrice', ticketPrice);
       formData.append('ticketsQuantity', ticketsQuantity);
       if (selectedImage) {
@@ -182,6 +184,19 @@ export default function ConcertCreate() {
                   />
                   <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                 </div>
+              </div>
+              <div>
+                <label className="block text-gray-300 text-sm font-medium mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={description}
+                  onChange={e => setDescription(e.target.value)}
+                  className="w-full bg-zinc-800 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+                  placeholder="Describe your concert"
+                  rows={4}
+                  required
+                />
               </div>
               <div className="flex gap-4">
                 <div className="flex-1">
