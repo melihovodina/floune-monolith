@@ -60,7 +60,9 @@ export default function Concerts() {
     }
     filtered.sort((a: Concert, b: Concert) => {
       if (sortBy === 'new') {
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : new Date(a.date).getTime();
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : new Date(b.date).getTime();
+        return bTime - aTime;
       }
       if (sortBy === 'price_asc') {
         return a.ticketPrice - b.ticketPrice;

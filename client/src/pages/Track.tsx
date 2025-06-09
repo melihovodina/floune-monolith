@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Play, Pause, Share2, Music } from 'lucide-react';
-import { getTrackById, getUserById, listenTrack } from '../api/api';
+import { getTrackById, getUserById, listenTrack, updateTrack } from '../api/api';
 import { usePlayer } from '../store/usePlayer';
 import { FastAverageColor } from 'fast-average-color';
 import Notification from '../components/Notification';
@@ -19,7 +19,7 @@ const Track: React.FC = () => {
   const imgRef = useRef<HTMLImageElement>(null);
   const [showCopied, setShowCopied] = useState(false);
   const fac = new FastAverageColor();
-   const { user } = useAuth();
+  const { user } = useAuth();
   const {
     currentTrack,
     isPlaying,
@@ -29,6 +29,14 @@ const Track: React.FC = () => {
 
   const isCurrentTrack = currentTrack?._id === id;
   const isFavorite = !!user?.likedTracks?.includes(track?._id);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState('');
+  const [editText, setEditText] = useState('');
+  const [editPicture, setEditPicture] = useState<File | null>(null);
+  const [editPicturePreview, setEditPicturePreview] = useState<string | null>(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [notification, setNotification] = useState<{ message: string; type?: 'success' | 'error' | 'info' } | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -119,6 +127,55 @@ const Track: React.FC = () => {
     if (artist) setArtist({ ...artist, followers: n });
   };
 
+  // --- Edit logic ---
+  const startEdit = () => {
+    setEditName(track.name);
+    setEditText(track.text);
+    setEditPicture(null);
+    setEditPicturePreview(null);
+    setIsEditing(true);
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+    setEditPicture(null);
+    setEditPicturePreview(null);
+  };
+
+  const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    setEditPicture(file);
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = ev => setEditPicturePreview(ev.target?.result as string);
+      reader.readAsDataURL(file);
+    } else {
+      setEditPicturePreview(null);
+    }
+  };
+
+  const handleEditSave = async () => {
+    setEditLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('name', editName);
+      formData.append('text', editText);
+      if (editPicture) formData.append('picture', editPicture);
+
+      await updateTrack(track._id, formData);
+      // Обновить данные трека после успешного запроса
+      const res = await getTrackById(track._id);
+      setTrack(res.data);
+      setIsEditing(false);
+      setEditPicture(null);
+      setEditPicturePreview(null);
+      setNotification({ message: 'Track updated successfully!', type: 'success' });
+    } catch (e) {
+      setNotification({ message: 'Failed to update track', type: 'error' });
+    }
+    setEditLoading(false);
+  };
+
   if (isLoading || !track) {
     return (
       <div className="flex justify-center items-center h-full">
@@ -127,9 +184,18 @@ const Track: React.FC = () => {
     );
   }
 
+  const isOwner = user && user._id === track.artistId;
+
   return (
     <div className="max-w-6xl mx-auto pb-8">
-      {showCopied && <Notification message="Track link copied"/>}
+      {showCopied && <Notification message="Track link copied" />}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
       <div
         className="rounded-lg overflow-hidden shadow-lg mb-8"
         style={{ background: bgGradient }}
@@ -137,7 +203,13 @@ const Track: React.FC = () => {
         <div className="p-6 md:p-8">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="md:w-1/3">
-              {track.picture ? (
+              {isEditing && editPicturePreview ? (
+                <img
+                  src={editPicturePreview}
+                  alt="New cover"
+                  className="w-full aspect-square object-cover rounded-lg shadow-md"
+                />
+              ) : track.picture ? (
                 <img
                   ref={imgRef}
                   crossOrigin="anonymous"
@@ -190,7 +262,7 @@ const Track: React.FC = () => {
                     ) : (
                       <img
                         src={`/blank.webp`}
-                        alt={artist.name}
+                        alt={artist?.name || ''}
                         className="w-10 h-10 rounded-full object-cover mr-3"
                       />
                     )}
@@ -215,25 +287,80 @@ const Track: React.FC = () => {
                   </div>
                 </div>
               </div>
+              {isOwner && !isEditing && (
+                <button
+                  className="mt-4 w-full px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded transition"
+                  onClick={startEdit}
+                >
+                  Edit track
+                </button>
+              )}
             </div>
 
             <div className="md:w-2/3">
-              <div className="flex items-center mb-4">
-                <button
-                  className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-[#ff5500] rounded-full hover:bg-orange-600 text-white mr-4 transition"
-                  onClick={handlePlayPause}
-                >
-                  {isCurrentTrack && isPlaying ? <Pause size={24} fill="white"/> : <Play size={24} className='ml-[2px]' fill="white"/>}
-                </button>
-
-                <div className="flex-1 min-w-0">
-                  <h1 className="text-2xl sm:text-4xl font-bold text-white break-words">{track.name}</h1>
+              {isEditing ? (
+                <div className="mb-8 bg-[#1a1f25] p-4 rounded">
+                  <div className="mb-2">
+                    <label className="block text-gray-300 mb-1">Track name</label>
+                    <input
+                      className="w-full p-2 rounded bg-gray-700 text-white"
+                      value={editName}
+                      onChange={e => setEditName(e.target.value)}
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="block text-gray-300 mb-1">Text</label>
+                    <textarea
+                      className="w-full p-2 rounded bg-gray-700 text-white"
+                      value={editText}
+                      onChange={e => setEditText(e.target.value)}
+                      rows={4}
+                    />
+                  </div>
+                  <div className="mb-2">
+                    <label className="block text-gray-300 mb-1">Picture</label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePictureChange}
+                      className="text-white"
+                    />
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <button
+                      className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+                      onClick={handleEditSave}
+                      disabled={editLoading}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded"
+                      onClick={cancelEdit}
+                      disabled={editLoading}
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-              </div>
-
-              <div className="mb-8 p-2">
-                <p className="text-white text-xl">{track.text}</p>
-              </div>
+              ) : (
+                <>
+                  <div className="flex items-center mb-4">
+                    <button
+                      className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-[#ff5500] rounded-full hover:bg-orange-600 text-white mr-4 transition"
+                      onClick={handlePlayPause}
+                    >
+                      {isCurrentTrack && isPlaying ? <Pause size={24} fill="white"/> : <Play size={24} className='ml-[2px]' fill="white"/>}
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <h1 className="text-2xl sm:text-4xl font-bold text-white break-words">{track.name}</h1>
+                    </div>
+                  </div>
+                  <div className="mb-8 p-2">
+                    <p className="text-white whitespace-pre-line break-words">{track.text}</p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -51,8 +51,20 @@ const TrackCard: React.FC<TrackCardProps> = ({ track, queue, compact = false }) 
           </button>
         </div>
         <div className="ml-3 flex-1 truncate">
-          <p className="text-sm font-medium text-white truncate">{track.name}</p>
-          <p className="text-xs text-gray-400 truncate">{track.artistName}</p>
+          <Link
+            to={`/track/${track._id}`}
+            className="text-sm font-medium text-white truncate hover:underline"
+            tabIndex={0}
+          >
+            {track.name}
+          </Link>
+          <Link
+            to={`/profile/${track.artistName}`}
+            className="text-xs text-gray-400 truncate hover:underline block"
+            tabIndex={0}
+          >
+            {track.artistName}
+          </Link>
         </div>
         <LikeButton
           isFavorite={isFavorite}

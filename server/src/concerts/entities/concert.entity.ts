@@ -33,6 +33,9 @@ export class Concert {
 
   @Prop()
   picturePath: string;
+  
+  @Prop()
+  schemePath: string;
 }
 
 export const ConcertSchema = SchemaFactory.createForClass(Concert);

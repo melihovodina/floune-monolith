@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UploadedFile, UseInterceptors, ForbiddenException, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UploadedFile, UseInterceptors, ForbiddenException, Query, UploadedFiles } from '@nestjs/common';
 import { ConcertsService } from './concerts.service';
 import { CreateConcertDto } from './dto/create-concert.dto';
 import { UpdateConcertDto } from './dto/update-concert.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { RoleGuard } from 'src/utils/guards/role.guard';
 import { Roles } from 'src/utils/decorators/role.decorator';
 
@@ -11,20 +11,23 @@ export class ConcertsController {
   constructor(private readonly concertsService: ConcertsService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('picture'))
+  @UseInterceptors(FilesInterceptor('files', 2))
   @UseGuards(RoleGuard)
   @Roles('artist', 'admin')
   async create(
     @Req() req,
     @Body() createConcertDto: CreateConcertDto,
-    @UploadedFile() picture?
+    @UploadedFiles() files
   ) {
     if (req.user.role === 'artist' || !createConcertDto.artist) {
       createConcertDto.artist = req.user.id;
       console.log('Artist ID set to:', createConcertDto.artist);
     }
 
-    return this.concertsService.create(createConcertDto, picture);
+    const picture = files?.[0];
+    const scheme = files?.[1];
+
+    return this.concertsService.create(createConcertDto, picture, scheme);
   }
 
   @Get()
@@ -50,28 +53,22 @@ export class ConcertsController {
   @Patch(':id')
   @UseGuards(RoleGuard)
   @Roles('artist', 'admin')
-  @UseInterceptors(FileInterceptor('picture'))
+  @UseInterceptors(FilesInterceptor('files', 2))
   async update(
     @Req() req,
     @Param('id') id: string,
     @Body() updateConcertDto: UpdateConcertDto,
-    @UploadedFile() picture?
+    @UploadedFiles() files
   ) {
-    const concert = await this.concertsService.findOne(id);
-    if (req.user.role === 'artist' && String(concert.artist) !== String(req.user._id)) {
-      throw new ForbiddenException('You can update only your own concerts');
-    }
-    return this.concertsService.update(id, updateConcertDto, picture);
+    const picture = files?.[0];
+    const scheme = files?.[1];
+    return this.concertsService.update(id, updateConcertDto, picture, scheme);
   }
 
   @Delete(':id')
   @UseGuards(RoleGuard)
   @Roles('artist', 'admin')
   async remove(@Req() req, @Param('id') id: string) {
-    const concert = await this.concertsService.findOne(id);
-    if (req.user.role === 'artist' && String(concert.artist) !== String(req.user._id)) {
-      throw new ForbiddenException('You can remove only your own concerts');
-    }
     return this.concertsService.remove(id);
   }
 }

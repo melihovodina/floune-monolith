@@ -13,6 +13,7 @@ import { Track, Concert, User, UsersSortBy } from '../types';
 import { Link } from 'react-router-dom';
 import { Trash2, Music, Ticket, User as UserIcon, Crown, Mic2 } from 'lucide-react';
 import * as Tabs from '@radix-ui/react-tabs';
+import Notification from '../components/Notification';
 
 export default function Admin() {
   const [tracks, setTracks] = useState<Track[]>([]);
@@ -22,6 +23,11 @@ export default function Admin() {
   const [tab, setTab] = useState<'tracks' | 'concerts' | 'users'>('tracks');
   const [searchQuery, setSearchQuery] = useState('');
   const [usersSortBy, setUsersSortBy] = useState<UsersSortBy>('createdAt');
+  const [notification, setNotification] = useState<{
+    message: string;
+    type?: 'success' | 'error' | 'info';
+    actions?: { label: string; onClick: () => void; variant?: 'primary' | 'secondary' }[];
+  } | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -42,7 +48,7 @@ export default function Admin() {
         setUsers(usersRes.data);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      setNotification({ message: 'Error fetching data', type: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -77,30 +83,64 @@ export default function Admin() {
         }
       }
     } catch (error) {
-      console.error('Error searching:', error);
+      setNotification({ message: 'Error searching', type: 'error' });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDeleteTrack = async (trackId: string) => {
-    if (!confirm('Are you sure you want to delete this track?')) return;
-    try {
-      await deleteTrack(trackId);
-      setTracks(tracks.filter(track => track._id !== trackId));
-    } catch (error) {
-      console.error('Error deleting track:', error);
-    }
+    setNotification({
+      message: 'Are you sure you want to delete this track?',
+      type: 'info',
+      actions: [
+        {
+          label: 'Cancel',
+          onClick: () => setNotification(null),
+          variant: 'secondary',
+        },
+        {
+          label: 'Delete',
+          onClick: async () => {
+            try {
+              await deleteTrack(trackId);
+              setTracks(tracks.filter(track => track._id !== trackId));
+              setNotification({ message: 'Track deleted!', type: 'success' });
+              setTimeout(() => setNotification(null), 1500);
+            } catch (error) {
+              setNotification({ message: 'Error deleting track', type: 'error' });
+            }
+          },
+        },
+      ],
+    });
   };
 
   const handleDeleteConcert = async (concertId: string) => {
-    if (!confirm('Are you sure you want to delete this concert?')) return;
-    try {
-      await deleteConcert(concertId);
-      setConcerts(concerts.filter(concert => concert._id !== concertId));
-    } catch (error) {
-      console.error('Error deleting concert:', error);
-    }
+    setNotification({
+      message: 'Are you sure you want to delete this concert?',
+      type: 'info',
+      actions: [
+        {
+          label: 'Cancel',
+          onClick: () => setNotification(null),
+          variant: 'secondary',
+        },
+        {
+          label: 'Delete',
+          onClick: async () => {
+            try {
+              await deleteConcert(concertId);
+              setConcerts(concerts.filter(concert => concert._id !== concertId));
+              setNotification({ message: 'Concert deleted!', type: 'success' });
+              setTimeout(() => setNotification(null), 1500);
+            } catch (error) {
+              setNotification({ message: 'Error deleting concert', type: 'error' });
+            }
+          },
+        },
+      ],
+    });
   };
 
   const handleChangeRole = async (userId: string, newRole: 'user' | 'artist' | 'admin') => {
@@ -113,13 +153,23 @@ export default function Admin() {
       formData.append('email', user.email);
       await adminUpdateUser(userId, formData);
       setUsers(users.map(u => (u._id === userId ? { ...u, role: newRole } : u)));
+      setNotification({ message: `Role updated to ${newRole}`, type: 'success' });
+      setTimeout(() => setNotification(null), 1500);
     } catch (error) {
-      console.error('Error updating user role:', error);
+      setNotification({ message: 'Error updating user role', type: 'error' });
     }
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4">
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+          actions={notification.actions}
+        />
+      )}
       <h1 className="text-2xl font-bold text-white mb-6">Admin Dashboard</h1>
 
       <Tabs.Root value={tab} onValueChange={v => setTab(v as any)} className="space-y-6">
@@ -303,7 +353,7 @@ export default function Admin() {
                 <tr className="border-b border-zinc-800">
                   <th className="text-left p-4 text-zinc-400">User</th>
                   <th className="text-left p-4 text-zinc-400">Role</th>
-                  <th className="text-left p-4 text-zinc-400">Followers</th>  
+                  <th className="text-left p-4 text-zinc-400">Followers</th>
                   <th className="text-right p-4 text-zinc-400">Actions</th>
                 </tr>
               </thead>

@@ -6,4 +6,8 @@ export class UpdateConcertDto extends PartialType(CreateConcertDto) {
   @IsOptional()
   @IsBoolean()
   removePicture?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  removeScheme?: boolean;
 }

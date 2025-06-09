@@ -110,11 +110,11 @@ export default function Orders() {
                     to={`/concerts/${order.concertId}`}
                     className="hover:underline text-orange-400"
                   >
-                    {order.concert?.artistName || 'Concert'} — {order.concert?.city || ''}
+                    {order.concert?.artistName || 'Concert'} — {order.concert?.venue || ''}
                   </Link>
                 </div>
                 <div className="text-gray-400 text-sm mb-1">
-                  Venue: {order.concert?.venue || '-'}
+                  Venue: {order.concert?.city || '-'}
                 </div>
                 <div className="text-gray-400 text-sm mb-1">
                   Date: {order.concert?.date ? format(new Date(order.concert.date), 'dd.MM.yyyy') : (order.date ? format(new Date(order.date), 'dd.MM.yyyy') : '-')}

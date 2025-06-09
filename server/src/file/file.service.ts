@@ -67,11 +67,11 @@ export class FileService {
     });
   }
 
-  removeFile(filePath: string) {
+  async removeFile(filePath: string) {
     try {
       const fullPath = path.resolve(process.cwd(), 'static', filePath);
       if (fs.existsSync(fullPath)) {
-        fs.unlinkSync(fullPath);
+        await fs.promises.unlink(fullPath);
       }
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);

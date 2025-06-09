@@ -58,6 +58,42 @@ export class TrackService {
     return this.trackModel.find({ _id: { $in: ids } });
   }
 
+  async update(
+    id: ObjectId,
+    updateTrackDto: any,
+    userId: string,
+    userRole: string,
+    picture?
+  ) {
+    const track = await this.trackModel.findById(id);
+    if (!track) {
+      throw new BadRequestException(`Track with id ${id} not found`);
+    }
+
+    if (track.artistId.toString() !== userId && userRole !== 'admin') {
+      throw new UnauthorizedException(`You are not authorized to update this track`);
+    }
+
+    let picturePath: string | undefined;
+    if (picture) {
+      if (track.picture) {
+        await this.fileService.removeFile(track.picture);
+      }
+      const pictureResult = await this.fileService.createFile(FileType.IMAGE, picture);
+      picturePath = pictureResult.path;
+    }
+
+    let updateQuery: any = { ...updateTrackDto };
+    if (picturePath !== undefined) {
+      updateQuery.picture = picturePath;
+    }
+
+    Object.assign(track, updateQuery);
+    await track.save();
+
+    return track;
+  }
+
   async delete(id: ObjectId, userId: string, userRole: string): Promise<ObjectId> {
     const track = await this.trackModel.findById(id);
 
@@ -69,8 +105,8 @@ export class TrackService {
       throw new UnauthorizedException(`You are not authorized to delete this track`);
     }
 
-    this.fileService.removeFile(track.audio);
-    this.fileService.removeFile(track.picture);
+    await this.fileService.removeFile(track.audio);
+    await this.fileService.removeFile(track.picture);
 
     await this.usersService.toggleTrackInUploads(track.artistId.toString(), id);
 

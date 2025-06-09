@@ -121,7 +121,7 @@ export class UsersService {
     let picturePath: string | undefined;
     if (picture) {
       if (user.picture) {
-        this.fileService.removeFile(user.picture);
+        await this.fileService.removeFile(user.picture);
       }
       const pictureResult = await this.fileService.createFile(FileType.IMAGE, picture);
       picturePath = pictureResult.path;
@@ -137,7 +137,7 @@ export class UsersService {
     let updatedUser;
     if (updateUserDto.removePicture) {
       if (user.picture) {
-        this.fileService.removeFile(user.picture);
+        await this.fileService.removeFile(user.picture);
       }
       updatedUser = await this.userModel.findByIdAndUpdate(
         id,
@@ -310,7 +310,7 @@ export class UsersService {
     }
   
     if (user.picture) {
-      this.fileService.removeFile(user.picture);
+      await this.fileService.removeFile(user.picture);
     }
   
     const deletedUser = await this.userModel.findByIdAndDelete(id).exec();

@@ -1,12 +1,13 @@
-import {Body, Controller, Delete, Get, Param, Post, Query, Req, UploadedFiles, UseGuards, UseInterceptors} from "@nestjs/common";
+import {Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UploadedFile, UploadedFiles, UseGuards, UseInterceptors} from "@nestjs/common";
 import {TrackService} from "./track.service";
 import {CreateTrackDto} from "./dto/create-track.dto";
 import {ObjectId} from "mongoose";
-import {FileFieldsInterceptor} from "@nestjs/platform-express";
+import {FileFieldsInterceptor, FileInterceptor} from "@nestjs/platform-express";
 import { AuthGuard } from "src/utils/guards/auth.guard";
 import { RoleGuard } from "src/utils/guards/role.guard";
 import { Roles } from "src/utils/decorators/role.decorator";
 import { TracksSortBy } from "src/utils/types";
+import { UpdateTrackDto } from "./dto/update-track.dto";
 
 @Controller('/tracks')
 export class TrackController {
@@ -48,6 +49,20 @@ export class TrackController {
   @Post('/by-ids')
   async getTracksByIds(@Body('ids') ids: string[]) {
     return this.trackService.getTracksByIds(ids);
+  }
+
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('picture'))
+  @UseGuards(AuthGuard)
+  async update(
+    @Req() req,
+    @Param('id') id: ObjectId,
+    @Body() updateTrackDto: UpdateTrackDto,
+    @UploadedFile() picture?
+  ) {
+    const userId = req.user.id;
+    const userRole = req.user.role;
+    return this.trackService.update(id, updateTrackDto, userId, userRole, picture);
   }
 
   @Delete(':id')

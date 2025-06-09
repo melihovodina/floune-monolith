@@ -95,6 +95,12 @@ export const createTrack = async (data: FormData) => {
   });
 };
 
+export const updateTrack = async (id: string, data: FormData) => {
+  return axiosInstance.patch(`/tracks/${id}`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+};
+
 export const deleteTrack = async (id: string) => {
   return axiosInstance.delete(`/tracks/${id}`);
 };

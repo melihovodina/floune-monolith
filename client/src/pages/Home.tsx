@@ -27,7 +27,7 @@ export default function Home() {
 
   const fetchArtists = async () => {
       try {
-        const response = await getAllUsers(7, 0, 'followers', 'artist');
+        const response = await getAllUsers(10, 0, 'followers', 'artist');
         setArtists(response.data);
         setIsLoading(false);
       } catch (error) {

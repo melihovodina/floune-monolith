@@ -47,6 +47,8 @@ export interface Concert {
   ticketPrice: number;
   approved: boolean;
   picturePath?: string;
+  schemePath?: string;
+  createdAt: string
 }
 
 export type UsersSortBy = 'followers' | 'createdAt' | 'user' | 'artist' | 'admin';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, X, Calendar, MapPin, DollarSign, Users } from 'lucide-react';
+import { Upload, X, Calendar, MapPin, DollarSign, Users, Layout } from 'lucide-react';
 import { createConcert } from '../api/api';
 import { useAuth } from '../store/useAuth';
 
@@ -14,6 +14,8 @@ export default function ConcertCreate() {
   const [ticketsQuantity, setTicketsQuantity] = useState('');
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedScheme, setSelectedScheme] = useState<File | null>(null);
+  const [schemePreview, setSchemePreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,6 +39,26 @@ export default function ConcertCreate() {
   const handleRemoveImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
+  };
+
+  const handleSchemeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedScheme(file);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (e.target && typeof e.target.result === 'string') {
+          setSchemePreview(e.target.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveScheme = () => {
+    setSelectedScheme(null);
+    setSchemePreview(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,8 +90,13 @@ export default function ConcertCreate() {
       formData.append('description', description);
       formData.append('ticketPrice', ticketPrice);
       formData.append('ticketsQuantity', ticketsQuantity);
+
+      // Важно: порядок файлов!
       if (selectedImage) {
-        formData.append('picture', selectedImage);
+        formData.append('files', selectedImage); // files[0] — постер
+      }
+      if (selectedScheme) {
+        formData.append('files', selectedScheme); // files[1] — схема зала
       }
 
       await createConcert(formData);
@@ -102,7 +129,7 @@ export default function ConcertCreate() {
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 Concert Poster
               </label>
-              <div className={`w-[300px] h-[300px] border-2 border-dashed rounded-lg ${
+              <div className={`w-[345px] h-[345px] border-2 border-dashed rounded-lg ${
                 selectedImage ? 'border-green-500' : 'border-gray-600 hover:border-orange-500'
               } transition flex flex-col items-center justify-center h-48 overflow-hidden`}>
                 {imagePreview ? (
@@ -139,6 +166,48 @@ export default function ConcertCreate() {
                   </div>
                 )}
               </div>
+              <div className='mt-4'>
+              <label className="block text-gray-300 text-sm font-medium mb-2">
+                Hall Scheme (optional)
+              </label>
+              <div className={`w-full h-full border-2 border-dashed rounded-lg ${
+                selectedScheme ? 'border-green-500' : 'border-gray-600 hover:border-orange-500'
+              } transition flex flex-col items-center justify-center h-48 overflow-hidden`}>
+                {schemePreview ? (
+                  <div className="relative w-full h-full">
+                    <img
+                      src={schemePreview}
+                      alt="Hall Scheme Preview"
+                      className="w-full h-full object-contain"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveScheme}
+                      className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 hover:bg-black/80 transition"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      type="file"
+                      id="concert-scheme"
+                      accept="image/*"
+                      onChange={handleSchemeChange}
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="concert-scheme"
+                      className="flex flex-col items-center cursor-pointer p-4"
+                    >
+                      <Layout size={32} className="text-gray-400 mb-2" />
+                      <p className="text-sm text-center text-gray-300">Upload hall scheme (optional)</p>
+                    </label>
+                  </div>
+                )}
+              </div>
+            </div>
             </div>
             <div className="space-y-4">
               <div>
@@ -179,10 +248,13 @@ export default function ConcertCreate() {
                     type="datetime-local"
                     value={date}
                     onChange={e => setDate(e.target.value)}
-                    className="w-full bg-zinc-800 rounded-md py-2 px-4 pl-10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full bg-zinc-800 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
                     required
                   />
-                  <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                  <Calendar
+                    size={20}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white pointer-events-none"
+                  />
                 </div>
               </div>
               <div>
@@ -194,7 +266,7 @@ export default function ConcertCreate() {
                   onChange={e => setDescription(e.target.value)}
                   className="w-full bg-zinc-800 rounded-md py-2 px-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
                   placeholder="Describe your concert"
-                  rows={4}
+                  rows={10}
                   required
                 />
               </div>

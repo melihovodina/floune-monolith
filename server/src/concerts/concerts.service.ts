@@ -15,7 +15,7 @@ export class ConcertsService {
     @Inject(forwardRef(() => UsersService)) private usersService: UsersService,
   ) {}
 
-    async create(createConcertDto: CreateConcertDto, picture?) {
+  async create(createConcertDto: CreateConcertDto, picture?, scheme?) {
     const concertDate = new Date(createConcertDto.date);
     const now = new Date();
     const minDate = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
@@ -30,9 +30,16 @@ export class ConcertsService {
       picturePath = pictureResult.path;
     }
 
+    let schemePath: string | undefined;
+    if (scheme) {
+      const schemeResult = await this.fileService.createFile(FileType.IMAGE, scheme);
+      schemePath = schemeResult.path;
+    }
+
     const concert = await this.concertModel.create({
       ...createConcertDto,
       picturePath,
+      schemePath,
     });
 
     await this.usersService.toggleConcertInUser(createConcertDto.artist, concert._id.toString(), true);
@@ -46,7 +53,9 @@ export class ConcertsService {
     if (onlyNew) {
       query.date = { $gte: now };
     }
-    return this.concertModel.find(query).populate('artist', '_id name picture').lean();
+    return this.concertModel.find(query)
+      .select('artistName venue city date ticketPrice ticketsQuantity picturePath createdAt')
+      .lean();
   }
 
   async findOne(id: string) {
@@ -72,20 +81,27 @@ export class ConcertsService {
     return concerts;
   }
 
-
-  async update(id: string, updateConcertDto: UpdateConcertDto, picture?) {
+  async update(id: string, updateConcertDto: UpdateConcertDto, picture?, scheme?) {
     const concert = await this.concertModel.findById(id);
     if (!concert) {
       throw new BadRequestException(`Concert with id ${id} not found`);
     }
 
     let picturePath: string | undefined = concert.picturePath;
+    let schemePath: string | undefined = concert.schemePath;
 
     if ((updateConcertDto as any).removePicture) {
       if (concert.picturePath) {
         await this.fileService.removeFile(concert.picturePath);
       }
       picturePath = undefined;
+    }
+
+    if ((updateConcertDto as any).removeScheme) {
+      if (concert.schemePath) {
+        await this.fileService.removeFile(concert.schemePath);
+      }
+      schemePath = undefined;
     }
 
     if (picture) {
@@ -96,13 +112,28 @@ export class ConcertsService {
       picturePath = pictureResult.path;
     }
 
+    if (scheme) {
+      if (concert.schemePath) {
+        await this.fileService.removeFile(concert.schemePath);
+      }
+      const schemeResult = await this.fileService.createFile(FileType.IMAGE, scheme);
+      schemePath = schemeResult.path;
+    }
+
     let updateQuery: any = { ...updateConcertDto };
     if (typeof picturePath !== 'undefined') {
       updateQuery.picturePath = picturePath;
     }
+    if (typeof schemePath !== 'undefined') {
+      updateQuery.schemePath = schemePath;
+    }
     if ((updateConcertDto as any).removePicture) {
-      updateQuery.$unset = { picturePath: 1 };
+      updateQuery.$unset = { ...(updateQuery.$unset || {}), picturePath: 1 };
       delete updateQuery.picturePath;
+    }
+    if ((updateConcertDto as any).removeScheme) {
+      updateQuery.$unset = { ...(updateQuery.$unset || {}), schemePath: 1 };
+      delete updateQuery.schemePath;
     }
 
     const updated = await this.concertModel.findByIdAndUpdate(
@@ -135,6 +166,9 @@ export class ConcertsService {
     }
     if (concert.picturePath) {
       await this.fileService.removeFile(concert.picturePath);
+    }
+    if (concert.schemePath) {
+      await this.fileService.removeFile(concert.schemePath);
     }
     if (concert.artist) {
       await this.usersService.toggleConcertInUser(concert.artist.toString(), id, false);
