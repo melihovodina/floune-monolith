@@ -253,14 +253,14 @@ export default function Admin() {
                 {tracks.map((track) => (
                   <tr key={track._id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
                     <td className="p-4">
-                      <div className="flex items-center gap-3">
+                      <Link to={`/track/${track._id}`} className="flex items-center gap-3 hover:underline">
                         <img
                           src={`http://localhost:5000/${track.picture}`}
                           alt={track.name}
                           className="w-10 h-10 rounded object-cover"
                         />
                         <span className="text-white">{track.name}</span>
-                      </div>
+                      </Link>
                     </td>
                     <td className="p-4 text-zinc-400">{track.artistName}</td>
                     <td className="p-4 text-zinc-400">{track.listens}</td>
@@ -304,39 +304,39 @@ export default function Admin() {
                   <th className="text-right p-4 text-zinc-400">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                {concerts.map((concert) => (
-                  <tr key={concert._id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
-                    <td className="p-4">
-                      <div className="flex items-center gap-3">
-                        {concert.picturePath ? (
-                          <img
-                            src={`http://localhost:5000/${concert.picturePath}`}
-                            alt={concert.venue}
-                            className="w-10 h-10 rounded object-cover"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded bg-zinc-700 flex items-center justify-center">
-                            <Ticket size={20} className="text-zinc-500" />
-                          </div>
-                        )}
-                        <span className="text-white">{concert.venue}</span>
-                      </div>
-                    </td>
-                    <td className="p-4 text-zinc-400">{concert.artistName}</td>
-                    <td className="p-4 text-zinc-400">{concert.city}</td>
-                    <td className="p-4 text-zinc-400">
-                      {new Date(concert.date).toLocaleDateString()}
-                    </td>
-                    <td className="p-4 text-zinc-400">{concert.ticketsQuantity}</td>
-                    <td className="p-4 text-right">
-                      <button
-                        onClick={() => handleDeleteConcert(concert._id)}
-                        className="text-red-500 hover:text-red-600 p-2"
-                        title="Delete concert"
-                      >
-                        <Trash2 size={20} />
-                      </button>
+                <tbody>
+                  {concerts.map((concert) => (
+                    <tr key={concert._id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
+                      <td className="p-4">
+                        <Link to={`/concerts/${concert._id}`} className="flex items-center gap-3 hover:underline">
+                          {concert.picturePath ? (
+                            <img
+                              src={`http://localhost:5000/${concert.picturePath}`}
+                              alt={concert.venue}
+                              className="w-10 h-10 rounded object-cover"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded bg-zinc-700 flex items-center justify-center">
+                              <Ticket size={20} className="text-zinc-500" />
+                            </div>
+                          )}
+                          <span className="text-white">{concert.venue}</span>
+                        </Link>
+                      </td>
+                      <td className="p-4 text-zinc-400">{concert.artistName}</td>
+                      <td className="p-4 text-zinc-400">{concert.city}</td>
+                      <td className="p-4 text-zinc-400">
+                        {new Date(concert.date).toLocaleDateString()}
+                      </td>
+                      <td className="p-4 text-zinc-400">{concert.ticketsQuantity}</td>
+                      <td className="p-4 text-right">
+                        <button
+                          onClick={() => handleDeleteConcert(concert._id)}
+                          className="text-red-500 hover:text-red-600 p-2"
+                          title="Delete concert"
+                        >
+                          <Trash2 size={20} />
+                        </button>
                     </td>
                   </tr>
                 ))}
@@ -361,14 +361,14 @@ export default function Admin() {
                 {users.map((user) => (
                   <tr key={user._id} className="border-b border-zinc-800 hover:bg-zinc-800/50">
                     <td className="p-4">
-                      <div className="flex items-center gap-3">
+                      <Link to={`/profile/${user.name}`} className="flex items-center gap-3 hover:underline">
                         <img
                           src={user.picture ? `http://localhost:5000/${user.picture}` : '/blank.webp'}
                           alt={user.name}
                           className="w-10 h-10 rounded-full object-cover"
                         />
                         <span className="text-white">{user.name}</span>
-                      </div>
+                      </Link>
                     </td>
                     <td className="p-4 text-zinc-400 capitalize">{user.role}</td>
                     <td className="p-4 text-zinc-400">{user.followers || 0}</td>
