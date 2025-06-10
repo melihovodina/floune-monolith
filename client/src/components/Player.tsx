@@ -37,7 +37,7 @@ const Player = () => {
     if (audioRef.current) {
       audioRef.current.volume = volume;
     }
-  }, [audioRef, currentTrack]);
+  }, [volume, currentTrack]);
 
   const handleTimeUpdate = () => {
     if (audioRef.current && trackDuration) {

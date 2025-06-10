@@ -21,7 +21,6 @@ export class ConcertsController {
   ) {
     if (req.user.role === 'artist' || !createConcertDto.artist) {
       createConcertDto.artist = req.user.id;
-      console.log('Artist ID set to:', createConcertDto.artist);
     }
 
     const picture = files?.[0];
