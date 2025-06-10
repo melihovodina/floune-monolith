@@ -234,7 +234,7 @@ export default function Profile() {
       </div>
       {tracks.length > 0 ? (
         <div className="grid grid-cols-1 gap-4">
-          {tracks.map((track, index) => (
+          {tracks.slice().reverse().map((track, index) => (
             <TrackCard key={index} track={track} queue={tracks} compact />
           ))}
         </div>
